@@ -84,7 +84,7 @@ constexpr uint8_t LIGHT_CAL_SPIN_SPEED = 140;   // spin at speed of 140 during c
 
 
 // constants for changing when the robot notices that it's spinning in circles and parks.
-constexpr uint16_t MIN_PARK_TIME = 10
+constexpr uint16_t MIN_PARK_TIME = 10;
 constexpr uint16_t MAX_PARK_TIME = 20; // minimum and maximum park times in seconds. defaults to 10-20 so you can see all behavior
 constexpr uint8_t PARKING_THRESHOLD_ANGLE = 65;            // heading angle used as threshold in the spinningInCircles() function
 constexpr uint8_t MOISTURE_SAMPLING_PERIOD = 10;           // sample the moisture every 10 seconds. also prints state to LED matrix at this interval in PARK

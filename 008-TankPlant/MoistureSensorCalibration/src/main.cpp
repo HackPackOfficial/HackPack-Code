@@ -47,7 +47,7 @@ SOFTWARE.
 
 // Many of the basic behaviors of the robot can be changed with the parameters stored in this header file.
 // Open it up to see what you can change!
-#include <Configuration.h>
+#include "Configuration.h"
 
 #include <CL_ADCTouch.h>          // Performs capacitive sensing using a single ADC pin        
 
