@@ -1,6 +1,6 @@
 #include "Arduino.h"
 #include "CL_DRV8835.h"
-#include <Configuration.h>
+#include "Configuration.h"
 #include <PinDefinitions.h>
 
 CL_DRV8835::CL_DRV8835(int leftSpeedPin, int leftDirPin, int rightSpeedPin, int rightDirPin) {
