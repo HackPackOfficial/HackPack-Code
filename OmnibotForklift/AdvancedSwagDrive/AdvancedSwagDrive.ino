@@ -28,12 +28,6 @@ int swagActive;
 
 int swagSpeeds[3];
 
-// motor flipping
-bool flipM1 = false;
-bool flipM2 = false;
-bool flipM3 = false;
-bool flipM4 = true;
-
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SETUP <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 void setup() {
