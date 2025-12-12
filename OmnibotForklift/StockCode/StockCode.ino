@@ -8,14 +8,14 @@ Combining this with a gyroscope allows for a true field oriented drive-- where  
 
 #include "config.h"
 
-#define S1_V 19
-#define S1_G 18
-#define S2_V 17
-#define S2_G 16
-#define S3_V 15
-#define S3_G 14
-#define S4_V 12
-#define S4_G 11
+#define RF_S1_V 19       // rf receiver signal pair 1, voltage
+#define RF_S1_G 18       // rf receiver signal pair 1, ground
+#define RF_S2_V 17
+#define RF_S2_G 16
+#define RF_S3_V 15
+#define RF_S3_G 14
+#define RF_S4_V 12
+#define RF_S4_G 11
 
 #define M1_DIR 4
 #define M1_PWM 5
@@ -64,14 +64,14 @@ unsigned long lastStrafe = 0;
 void setup() {
   Serial.begin(115200);
   Serial.println("OMNIB V0.9.1 ..... (01/22/2025)");
-  pinMode(19, INPUT_PULLUP);
-  pinMode(18, INPUT_PULLUP);
-  pinMode(17, INPUT_PULLUP);
-  pinMode(16, INPUT_PULLUP);
-  pinMode(15, INPUT_PULLUP);
-  pinMode(14, INPUT_PULLUP);
-  pinMode(12, INPUT_PULLUP);
-  pinMode(11, INPUT_PULLUP);
+  pinMode(RF_S1_V, INPUT_PULLUP);
+  pinMode(RF_S1_G, INPUT_PULLUP);
+  pinMode(RF_S2_V, INPUT_PULLUP);
+  pinMode(RF_S2_G, INPUT_PULLUP);
+  pinMode(RF_S3_V, INPUT_PULLUP);
+  pinMode(RF_S3_G, INPUT_PULLUP);
+  pinMode(RF_S4_V, INPUT_PULLUP);
+  pinMode(RF_S4_G, INPUT_PULLUP);
 }
 
 
@@ -98,28 +98,28 @@ void getDirection(){
 
   // sample for 10ms for any pins going LOW. Deals with RF signal dropoouts.
   while(millis() < (t + 10)){
-    if(digitalRead(18) == 0){
+    if(digitalRead(RF_S1_G) == 0){
       inputs[0] = 0;
     }
-    if(digitalRead(19) == 0){
+    if(digitalRead(RF_S1_V) == 0){
       inputs[1] = 0;
     }
-    if(digitalRead(16) == 0){
+    if(digitalRead(RF_S2_G) == 0){
       inputs[2] = 0;
     }
-    if(digitalRead(17) == 0){
+    if(digitalRead(RF_S2_V) == 0){
       inputs[3] = 0;
     }
-    if(digitalRead(14) == 0){
+    if(digitalRead(RF_S3_G) == 0){
       inputs[4] = 0;
     }
-    if(digitalRead(15) == 0){
+    if(digitalRead(RF_S3_V) == 0){
       inputs[5] = 0;
     }
-    if(digitalRead(11) == 0){
+    if(digitalRead(RF_S4_G) == 0){
       inputs[6] = 0;
     }
-    if(digitalRead(12) == 0){
+    if(digitalRead(RF_S4_V) == 0){
       inputs[7] = 0;
     }
   }
@@ -144,8 +144,8 @@ void getDirection(){
   // These sequence of inputs are read when button/ button combos are pressed
   int F[8] = {1, 1, 0, 1, 1, 0, 1, 1};      // 1. forward
   int B[8] = {1, 1, 1, 0, 0, 1, 1, 1};      // 2. back
-  int L[8] = {0, 1, 0, 1, 0, 1, 1, 1};      // 3. right
-  int R[8] = {1, 0, 1, 0, 1, 0, 1, 1};      // 4. left
+  int L[8] = {0, 1, 0, 1, 0, 1, 1, 1};      // 3. left
+  int R[8] = {1, 0, 1, 0, 1, 0, 1, 1};      // 4. right
   int U[8] = {1, 1, 1, 1, 1, 1, 1, 0};      // 5. fork up
   int D[8] = {1, 1, 1, 1, 1, 1, 0, 1};      // 6. fork down
   int FL[8] = {0, 1, 0, 1, 1, 0, 1, 1};     // 7. forward + left
@@ -163,9 +163,8 @@ void getDirection(){
   //create array that enumerates every command 
   int cmdArr[15] = {0};
 
-  // We loop through all pin values and compares number of matches for each command. One of the commands will match all 8 pin outputs and that is what will get chosen as the transmitter's result. 
-
-  // For example pressing the backwards button will generate a cmdArr =  {F = 0, B = 8, L = 4, R = 4, U = 4, D = 4, FL = 2, FR = 2, BL = 6, BR = 6, FU = 2, FD = 2, BU = 6, BD = 6, N = 4}. Thus backwards with a "match value" of 8 will be chosen.
+  // We loop through all pin readings and compare the number of matches for each command. One of the commands will match all 8 pin outputs and that is what will get chosen as the transmitter's result. cmdArr ranks the match value.
+  // For example pressing the backwards button will generate a cmdArr =  {F = 0, B = 8, L = 4, R = 4, U = 4, D = 4, FL = 2, FR = 2, BL = 6, BR = 6, FU = 2, FD = 2, BU = 6, BD = 6, NONE = 4}. Thus backwards with a "match value" of 8 will be chosen.
   for(int i = 0; i < 8; i++){
     if(inputArr[i] == F[i]) cmdArr[0] += 1;
     if(inputArr[i] == B[i]) cmdArr[1] += 1;
@@ -191,7 +190,7 @@ void getDirection(){
     }
   }
   
-  // Assign speed vector vlaues based on chosen command
+  // Assign speed vector values based on chosen command
   switch(command){
     case 0: //Forward
       vSpeed[0] = 0;
