@@ -4,20 +4,24 @@ Huge thanks to those who have derived the kinematic conrrols for omni-directiona
 Amazingly the relationship of the wheel speeds of the robot to its overall speed vector is algebraically linear.  The formula also works for any relative wheel angle and can easily be expanded to include more wheels. This gives a mathematically deterministic way to get the robot from A to B defined by two translation variables and one rotation variable, a powerful tool. 
 
 Combining this with a gyroscope allows for a true field oriented drive-- where  joystick commands always will move the robot forwards relative to you, despite which way the robot is facing. For those of you willing to take on the challenge, this is a great hack to try!
+
+This hack will requrie repinning the RF reciever so that the MPU 6050 can access the I2C pins A4, and A5
 */
 
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
 
-#define S1_V 19
-#define S1_G 18
-#define S2_V 17
-#define S2_G 16
-#define S3_V 15
-#define S3_G 14
-#define S4_V 12
-#define S4_G 11
+#include "config.h"
+
+#define RF_S1_V 17      // rf receiver signal 1 voltage
+#define RF_S1_G 16      // rf receiver signal 1 ground
+#define RF_S2_V 15
+#define RF_S2_G 14
+#define RF_S3_V 13
+#define RF_S3_G 12
+#define RF_S4_V 11
+#define RF_S4_G 10
 
 #define M1_DIR 4
 #define M1_PWM 5
@@ -43,12 +47,12 @@ int lastCommand[4] = {14, 14, 14, 14};
 bool strafeMode = false;
 
 
-//Robot Physical Parameters -------------------------------------
+//Globals: Robot Physical Parameters -------------------------------------
 double angleWheel1 = 90.0;
 double angleWheel2 = 210.0;
 double angleWheel3 = 330.0;
 
-// Equation puts wheel 1 facing forwards. This rotates the robot's "front" ccw.
+// Default equation puts wheel 1 facing forwards. This rotates the robot's "front" ccw so the forklift is aligned.
 double localAngle = 60.0;
 // Gyro measurement result
 double gyroAngle = 0.0;
@@ -56,9 +60,6 @@ double gyroAngle = 0.0;
 double botRadius = 100.0;
 // Radius of omniwheel
 double wheelRadius = 35.0;
-
-// Maximum motor duty cycle [0 - 255]
-uint16_t maxSpeed = 255;
 
 // Last MPU measuement time
 unsigned long lastGyroTime;
@@ -79,14 +80,14 @@ void setup() {
   Wire.begin();
 
 
-  pinMode(17, INPUT_PULLUP);
-  pinMode(16, INPUT_PULLUP);
-  pinMode(15, INPUT_PULLUP);
-  pinMode(14, INPUT_PULLUP);
-  pinMode(13, INPUT_PULLUP);
-  pinMode(12, INPUT_PULLUP);
-  pinMode(11, INPUT_PULLUP);
-  pinMode(10, INPUT_PULLUP);
+  pinMode(RF_S1_V, INPUT_PULLUP);
+  pinMode(RF_S1_G, INPUT_PULLUP);
+  pinMode(RF_S2_V, INPUT_PULLUP);
+  pinMode(RF_S2_G, INPUT_PULLUP);
+  pinMode(RF_S3_V, INPUT_PULLUP);
+  pinMode(RF_S3_G, INPUT_PULLUP);
+  pinMode(RF_S4_V, INPUT_PULLUP);
+  pinMode(RF_S4_G, INPUT_PULLUP);
 
   // Wait for MPU comms
   if (!mpu.begin()) {
@@ -97,6 +98,7 @@ void setup() {
   }
   Serial.println("MPU6050 Found!");
 
+  //set up gyro
   mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
   Serial.print("Accelerometer range set to: ");
   switch (mpu.getAccelerometerRange()) {
@@ -193,28 +195,28 @@ void getDirection(){
 
   // sample for 10ms fo any pins going LOW. Deals with RF signal dropoouts.
   while(millis() < (t + 15)){
-    if(digitalRead(12) == 0){
+    if(digitalRead(RF_S3_G) == 0){
       inputs[0] = 0;
     }
-    if(digitalRead(13) == 0){
+    if(digitalRead(RF_S3_V) == 0){
       inputs[1] = 0;
     }
-    if(digitalRead(16) == 0){
+    if(digitalRead(RF_S1_G) == 0){
       inputs[2] = 0;
     }
-    if(digitalRead(17) == 0){
+    if(digitalRead(RF_S1_V) == 0){
       inputs[3] = 0;
     }
-    if(digitalRead(14) == 0){
+    if(digitalRead(RF_S2_G) == 0){
       inputs[4] = 0;
     }
-    if(digitalRead(15) == 0){
+    if(digitalRead(RF_S2_V) == 0){
       inputs[5] = 0;
     }
-    if(digitalRead(10) == 0){
+    if(digitalRead(RF_S4_G) == 0){
       inputs[6] = 0;
     }
-    if(digitalRead(11) == 0){
+    if(digitalRead(RF_S4_V) == 0){
       inputs[7] = 0;
     }
   }

@@ -1,11 +1,13 @@
-#define S1_V 19
-#define S1_G 18
-#define S2_V 17
-#define S2_G 16
-#define S3_V 15
-#define S3_G 14
-#define S4_V 12
-#define S4_G 11
+#include "config.h"
+
+#define RF_S1_V 19        // rf receiver signal 1 voltage
+#define RF_S1_G 18        // rf receiver signal 1 ground
+#define RF_S2_V 17
+#define RF_S2_G 16
+#define RF_S3_V 15
+#define RF_S3_G 14
+#define RF_S4_V 12
+#define RF_S4_G 11
 
 #define M1_DIR 4
 #define M1_PWM 5
@@ -26,31 +28,19 @@ int swagActive;
 
 int swagSpeeds[3];
 
-// Maximum motor duty cycle [0 - 255]
-uint8_t maxSpeed = 255;
-
-// tuning paratmeter to get linearized motor speed.
-double tune = 1; 
-
-// motor flipping
-bool flipM1 = false;
-bool flipM2 = false;
-bool flipM3 = false;
-bool flipM4 = true;
-
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SETUP <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 void setup() {
   Serial.begin(115200);
   Serial.println("OMNIB_Hack_SwagDrive V0.1.0 ..... (03/11/2025)");
-  pinMode(19, INPUT_PULLUP);
-  pinMode(18, INPUT_PULLUP);
-  pinMode(17, INPUT_PULLUP);
-  pinMode(16, INPUT_PULLUP);
-  pinMode(15, INPUT_PULLUP);
-  pinMode(14, INPUT_PULLUP);
-  pinMode(12, INPUT_PULLUP);
-  pinMode(11, INPUT_PULLUP);
+  pinMode(RF_S1_V, INPUT_PULLUP);
+  pinMode(RF_S1_G, INPUT_PULLUP);
+  pinMode(RF_S2_V, INPUT_PULLUP);
+  pinMode(RF_S2_G, INPUT_PULLUP);
+  pinMode(RF_S3_V, INPUT_PULLUP);
+  pinMode(RF_S3_G, INPUT_PULLUP);
+  pinMode(RF_S4_V, INPUT_PULLUP);
+  pinMode(RF_S4_G, INPUT_PULLUP);
 }
 
 
@@ -75,28 +65,28 @@ void getSwag(){
 
   // sample for 5ms fo any pins going LOW. Deals with RF signal dropoouts.
   while(millis() < (t + 1)){
-    if(digitalRead(18) == 0){
+    if(digitalRead(RF_S1_G) == 0){
       inputs[0] = 0;
     }
-    if(digitalRead(19) == 0){
+    if(digitalRead(RF_S1_V) == 0){
       inputs[1] = 0;
     }
-    if(digitalRead(16) == 0){
+    if(digitalRead(RF_S2_G) == 0){
       inputs[2] = 0;
     }
-    if(digitalRead(17) == 0){
+    if(digitalRead(RF_S2_V) == 0){
       inputs[3] = 0;
     }
-    if(digitalRead(14) == 0){
+    if(digitalRead(RF_S3_G) == 0){
       inputs[4] = 0;
     }
-    if(digitalRead(15) == 0){
+    if(digitalRead(RF_S3_V) == 0){
       inputs[5] = 0;
     }
-    if(digitalRead(11) == 0){
+    if(digitalRead(RF_S4_G) == 0){
       inputs[6] = 0;
     }
-    if(digitalRead(12) == 0){
+    if(digitalRead(RF_S4_V) == 0){
       inputs[7] = 0;
     }
   }
