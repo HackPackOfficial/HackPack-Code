@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lamp Animation Visualizer</title>
+</head>
+
+<body>
+    <h1>Lamp Animation Visualizer</h1>
+    <label>
+        Animation Progress:
+        <input type="range" id="progressSlider" min="0" max="1" step="0.01" value="0" style="width: 100%;">
+        <div class="slider-labels" id="frameLabels"></div>
+    </label>
+    <div id="coordDisplay">X: 0, Y: 0</div>
+    <canvas id="canvas" width="400" height="400" style="border: 1px solid #aaa; margin-top: 10px;"></canvas>
+    <div>
+        <label for="speedInput">Speed (units/sec):</label>
+        <input type="number" id="speedInput" value="200" style="width: 80px;">
+    </div>
+    <div id="codeInput" contenteditable="true"
+        style="margin-bottom: 10px; background: #fff0f0; padding: 10px; border: 1px solid #f99; font-size: 0.9em; overflow-x: auto; white-space: pre-wrap;">
+        Paste your animation code here...</div>
+    <div id="codeOutput"
+        style="margin-top: 20px; background: #f5f5f5; padding: 10px; border: 1px solid #ccc; font-size: 0.9em; overflow-x: auto; white-space: pre-wrap;">
+    </div>
+
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        const slider = document.getElementById("progressSlider");
+        const frameLabels = document.getElementById("frameLabels");
+        const coordDisplay = document.getElementById("coordDisplay");
+
+        let draggingPoint = null;
+        let dragType = null;
+
+        const keyframes = [
+            { x: 80, y: 40, duration: 300, useBezier: false, controlX: 0, controlY: 0 },
+            { x: 90, y: 70, duration: 300, useBezier: true, controlX: 60, controlY: 70 },
+            { x: 100, y: 40, duration: 300, useBezier: true, controlX: 120, controlY: 70 },
+            { x: 90, y: 70, duration: 300, useBezier: true, controlX: 120, controlY: 70 },
+            { x: 80, y: 40, duration: 300, useBezier: true, controlX: 60, controlY: 70 },
+            { x: 90, y: 70, duration: 300, useBezier: true, controlX: 60, controlY: 70 }
+        ];
+
+        const startX = keyframes[0].x;
+        const startY = keyframes[0].y;
+        const canvasSize = 400;
+        const rangeMin = 0;
+        const rangeMax = 180;
+        const scale = canvasSize / (rangeMax - rangeMin);
+
+        function toCanvasX(x) { return (x - rangeMin) * scale; }
+        function toCanvasY(y) { return (y - rangeMin) * scale; }
+
+        function interpolateLinear(p0, p1, t) {
+            return p0 + (p1 - p0) * t;
+        }
+
+        function interpolateQuadraticBezier(p0, p1, p2, t) {
+            return (1 - t) * (1 - t) * p0 + 2 * (1 - t) * t * p1 + t * t * p2;
+        }
+
+        function drawPoint(x, y, color = "black", radius = 3) {
+            ctx.beginPath();
+            ctx.arc(toCanvasX(x), toCanvasY(y), radius, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        function getTotalDuration() {
+            return keyframes.reduce((sum, kf) => sum + kf.duration, 0);
+        }
+
+        function getPositionAtProgress(progress) {
+            let time = progress * getTotalDuration();
+            let x0 = startX, y0 = startY;
+            for (const kf of keyframes) {
+                if (time < kf.duration) {
+                    const t = time / kf.duration;
+                    const x = kf.useBezier ? interpolateQuadraticBezier(x0, kf.controlX, kf.x, t) : interpolateLinear(x0, kf.x, t);
+                    const y = kf.useBezier ? interpolateQuadraticBezier(y0, kf.controlY, kf.y, t) : interpolateLinear(y0, kf.y, t);
+                    return { x, y };
+                }
+                time -= kf.duration;
+                x0 = kf.x;
+                y0 = kf.y;
+            }
+            return { x: keyframes[keyframes.length - 1].x, y: keyframes[keyframes.length - 1].y };
+        }
+
+        function updateFrameLabels() {
+            frameLabels.innerHTML = "";
+            frameLabels.style.position = "relative";
+            frameLabels.style.height = "20px";
+            const count = keyframes.length;
+            for (let i = 0; i < count; i++) {
+                const tick = document.createElement("div");
+                tick.style.position = "absolute";
+                tick.style.bottom = "0";
+                tick.style.width = "1px";
+                tick.style.height = "6px";
+                tick.style.backgroundColor = "#333";
+                tick.style.left = `${(i / (count - 1)) * 100}%`;
+                frameLabels.appendChild(tick);
+
+                const label = document.createElement("span");
+                label.textContent = i + 1;
+                label.style.position = "absolute";
+                label.style.transform = "translateX(-50%)";
+                label.style.top = "6px";
+                label.style.fontSize = "0.75em";
+                label.style.fontWeight = "bold";
+                label.style.left = `${(i / (count - 1)) * 100}%`;
+                frameLabels.appendChild(label);
+            }
+        }
+
+        function drawScene(progress) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+
+            ctx.strokeStyle = "#ddd";
+            for (let i = rangeMin; i <= rangeMax; i += 30) {
+                const x = toCanvasX(i);
+                const y = toCanvasY(i);
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(toCanvasX(startX), toCanvasY(startY));
+            let x0 = startX, y0 = startY;
+            for (const kf of keyframes) {
+                if (kf.useBezier) {
+                    ctx.quadraticCurveTo(toCanvasX(kf.controlX), toCanvasY(kf.controlY), toCanvasX(kf.x), toCanvasY(kf.y));
+                } else {
+                    ctx.lineTo(toCanvasX(kf.x), toCanvasY(kf.y));
+                }
+                x0 = kf.x;
+                y0 = kf.y;
+            }
+            ctx.strokeStyle = "#000";
+            ctx.stroke();
+
+            const pos = getPositionAtProgress(progress);
+            drawPoint(pos.x, pos.y, "red", 5);
+            coordDisplay.textContent = `X: ${pos.x.toFixed(1)}, Y: ${pos.y.toFixed(1)}`;
+
+            drawPoint(startX, startY, "green", 5);
+            for (const kf of keyframes) drawPoint(kf.x, kf.y, "green", 5);
+            for (const kf of keyframes) if (kf.useBezier) drawPoint(kf.controlX, kf.controlY, "blue", 3);
+
+            ctx.restore();
+        }
+
+        function updateCodeOutput() {
+            const speed = parseFloat(document.getElementById("speedInput").value) || 200;
+            const lengths = [];
+            let x0 = startX, y0 = startY;
+            for (const kf of keyframes) {
+                let length;
+                if (kf.useBezier) {
+                    let total = 0;
+                    let prev = { x: x0, y: y0 };
+                    for (let t = 0.05; t <= 1.0; t += 0.05) {
+                        const x = interpolateQuadraticBezier(x0, kf.controlX, kf.x, t);
+                        const y = interpolateQuadraticBezier(y0, kf.controlY, kf.y, t);
+                        total += Math.hypot(x - prev.x, y - prev.y);
+                        prev = { x, y };
+                    }
+                    length = total;
+                } else {
+                    length = Math.hypot(kf.x - x0, kf.y - y0);
+                }
+                lengths.push(length.toFixed(2));
+                x0 = kf.x;
+                y0 = kf.y;
+            }
+
+            const durations = lengths.map(len => Math.round((parseFloat(len) / speed) * 1000));
+            keyframes.forEach((kf, i) => { kf.duration = durations[i]; });
+
+            const container = document.getElementById("codeOutput");
+            container.innerHTML = "";
+            const codeLines = keyframes.map((kf, i) => `  excitedAnimations[1][${i}] = {${Math.round(kf.x)}, ${Math.round(kf.y)}, ${kf.duration}, INTERP_EASE_IN_OUT, -1, ${Math.round(kf.controlX)}, ${Math.round(kf.controlY)}, ${kf.useBezier ? 1 : 0}};`);
+            codeLines.forEach((line, i) => {
+                const div = document.createElement("div");
+                div.contentEditable = true;
+                div.textContent = line;
+                div.addEventListener("input", () => {
+                    try {
+                        const updated = div.textContent.match(/\{(.*?)\}/)[1].split(",").map(s => s.trim());
+                        keyframes[i].x = parseFloat(updated[0]);
+                        keyframes[i].y = parseFloat(updated[1]);
+                        keyframes[i].duration = durations[i];
+                        keyframes[i].controlX = parseFloat(updated[5]);
+                        keyframes[i].controlY = parseFloat(updated[6]);
+                        keyframes[i].useBezier = updated[7] === "1";
+                        drawScene(parseFloat(slider.value));
+                        updateCodeOutput();
+                    } catch (e) { console.error("Parse error", e); }
+                });
+                container.appendChild(div);
+            });
+
+            const lengthInfo = document.createElement("div");
+            lengthInfo.style.marginTop = "1em";
+            lengthInfo.innerHTML = '<strong>Segment lengths:</strong> [' + lengths.join(', ') + ']<br><strong>Suggested durations (ms @ ' + speed + ' units/sec):</strong> [' + durations.join(', ') + ']';
+            container.appendChild(lengthInfo);
+
+            const pre = document.createElement("pre");
+            pre.textContent = codeLines.join("\n");
+            container.appendChild(pre);
+        }
+
+        document.getElementById("codeInput").addEventListener("input", () => {
+            const lines = document.getElementById("codeInput").innerText.split("\n").filter(line => line.includes("excitedAnimations"));
+            const newKeyframes = [];
+            for (const line of lines) {
+                try {
+                    const parts = line.match(/\{(.*?)\}/)[1].split(",").map(s => s.trim());
+                    newKeyframes.push({
+                        x: parseFloat(parts[0]),
+                        y: parseFloat(parts[1]),
+                        duration: parseInt(parts[2]),
+                        controlX: parseFloat(parts[5]),
+                        controlY: parseFloat(parts[6]),
+                        useBezier: parts[7] === "1"
+                    });
+                } catch (e) { console.error("Import error", e); }
+            }
+            if (newKeyframes.length) {
+                keyframes.splice(0, keyframes.length, ...newKeyframes);
+                updateFrameLabels();
+                drawScene(parseFloat(slider.value));
+                updateCodeOutput();
+            }
+        });
+
+        canvas.addEventListener("mousedown", (e) => {
+            const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, radius = 6;
+            for (let i = 0; i < keyframes.length; i++) {
+                const kf = keyframes[i];
+                if (Math.hypot(mx - toCanvasX(kf.x), my - toCanvasY(kf.y)) < radius) { draggingPoint = i; dragType = "point"; return; }
+                if (Math.hypot(mx - toCanvasX(kf.controlX), my - toCanvasY(kf.controlY)) < radius) { draggingPoint = i; dragType = "control"; return; }
+            }
+        });
+        canvas.addEventListener("mouseup", () => { draggingPoint = null; });
+        canvas.addEventListener("mousemove", (e) => {
+            if (draggingPoint === null) return;
+            const r = canvas.getBoundingClientRect();
+            const x = Math.max(rangeMin, Math.min(rangeMax, (e.clientX - r.left) / scale + rangeMin));
+            const y = Math.max(rangeMin, Math.min(rangeMax, (e.clientY - r.top) / scale + rangeMin));
+            if (dragType === "point") { keyframes[draggingPoint].x = x; keyframes[draggingPoint].y = y; }
+            else { keyframes[draggingPoint].controlX = x; keyframes[draggingPoint].controlY = y; }
+            drawScene(parseFloat(slider.value));
+            updateCodeOutput();
+        });
+
+        slider.addEventListener("input", () => drawScene(parseFloat(slider.value)));
+        document.getElementById("speedInput").addEventListener("input", updateCodeOutput);
+        updateFrameLabels();
+        drawScene(0);
+        updateCodeOutput();
+    </script>
+</body>
+
+</html>
