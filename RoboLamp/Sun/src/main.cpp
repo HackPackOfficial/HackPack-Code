@@ -100,7 +100,7 @@ const uint8_t JoyYawPin = A6;         // Joystick yaw axis potentiometer (A6 = D
 const uint8_t JoyPitchPin = A7;       // Joystick pitch axis potentiometer (A7 = D21)
 const uint8_t heightEncoderPin = A0;  // Pot encoder for height of lamp
 
-const uint8_t ambientLightPin = Config::ambientLightPin; // A4 for the default hack, since it's unused
+const uint8_t ambientLightPin = Config::ambientLightPin; // A5 for the default hack, since it's unused
 
 #pragma endregion PIN DEFINITIONS
 

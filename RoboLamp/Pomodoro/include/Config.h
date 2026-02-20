@@ -101,10 +101,10 @@ namespace Config
     // --------------------------------------------------------------------
     // HACK 4: Pomodoro Timer
     // --------------------------------------------------------------------
-    constexpr unsigned long workingTime = 1UL * 60UL * 1000UL;   // 15 min
-    constexpr unsigned long breakTime = 1UL * 60UL * 1000UL;     // 5 min
-    constexpr unsigned long longBreakTime = 2UL * 60UL * 1000UL; // 15 min
-    constexpr uint8_t numBreaksBeforeLongBreak = 4;
+    constexpr unsigned long workingTime = 25UL * 60UL * 1000UL;   // 25 min working time
+    constexpr unsigned long breakTime = 5UL * 60UL * 1000UL;     // 5 min short break
+    constexpr unsigned long longBreakTime = 10UL * 60UL * 1000UL; // 10 min long break
+    constexpr uint8_t numBreaksBeforeLongBreak = 3; // 3 cycles before a long break
 
     constexpr uint16_t pomodoroWorkHue = 10;          // red-ish
     constexpr uint16_t pomodoroShortBreakHue = 22000; // green
