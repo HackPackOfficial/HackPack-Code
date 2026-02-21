@@ -104,8 +104,8 @@ namespace Config
     constexpr bool enableSunriseSunset = true;
 
     // Ambient sensor input pin (choose an unused analog pin).
-    // NOTE: A0/A1/A2/A3/A6/A7 are already used in stock code. A4 is a good default.
-    constexpr uint8_t ambientLightPin = A4;
+    // NOTE: A0/A1/A2/A3/A6/A7 are already used in stock code. A5 is a good default.
+    constexpr uint8_t ambientLightPin = A5;
 
     // If your sensor reads "higher in darkness" instead of "higher in brightness", flip this.
     constexpr bool ambientInvert = false;
