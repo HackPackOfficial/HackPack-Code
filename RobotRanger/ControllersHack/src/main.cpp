@@ -31,30 +31,13 @@
 
 /*
  ************************************************************************************
- * Robot Ranger Stock Code
- * June 2026
- * Version: 1.0
+ * Robot Ranger Controllers HACK Code
  * Author: Crunchlabs LLC
  *
- *   This stock code runs the Robot Ranger, a projectile motion launcher
- *   coupled with a time of flight sensor. Time of flight is a method
- *   used to measure the distance to a target, and is the underlying
- *   tech for radar, sonar, lidar, and more! Updates may occur as we add more
- *   features and improve the code. Currently, it includes a variety of
- *   modes, including auto-aiming, manual control, and a reflex game.
+ *   This is revised code that runs many control modes, each interfacing with a different controller style. These
+ *   are all controllers you can grab from previous Hack Packs (IR, RF, Joystick, etc.). Read each header file to see which are the 
+ *   relevant pins for the controller modes. 
  *
- *   Each mode is a class that inherits from the "Mode" class.
- *   This allows for modes to be added without changing the main code too much - a benefit over a
- *   multi-nested state machine. Hack your own modes into the code! This flexibility is the basis of
- *   polymorphism, a core concept in Object Oriented Programming.
- *
- *   To add modes, just create another pair of .h and .cpp files in the modes folder under src,
- *   and add them to the modeList array in the setup declaration titled "ModesManager".
- *   You can follow the structure below.
- *
- *   For more info and to access the hacks, visit the Crunchlabs IDE. For community updates,
- *   check out our Discord server. For help making your own hacks, ask our very own Mark Robot
- *   on the IDE!
  ************************************************************************************
  */
 
@@ -69,22 +52,22 @@
  * If removing modes, be sure to recompile before uploading to see if errors occur.
  ************************************************************************************
  */
-#include "Shared.h"       //Header file for shared variables
-#include "ModesManager.h" //Header for mode selection class
-
-
-#include "modes_headers/CalibrationMode.h"
-#include "modes_headers/AutoMode.h"
-#include "modes_headers/ReflexMode.h"
+#include "Shared.h"
+#include "ModesManager.h"
+#include "modes_headers/IRMode.h"
+#include "modes_headers/JoystickMode.h"
+#include "modes_headers/OmnibMode.h"
 #include "modes_headers/ManualYawMode.h"
 #include "modes_headers/ManualPitchMode.h"
-CalibrationMode calibration;
-AutoMode automatic;
-ReflexMode reflex;
 ManualYawMode manualYaw;
 ManualPitchMode manualPitch;
-Mode *modeList[] = {&calibration, &automatic, &reflex, &manualYaw, &manualPitch}; // Add modes HERE
-ModesManager modeManager(modeList, sizeof(modeList) / sizeof(modeList[0]));       // DO NOT touch this line, allows for dynamic mode addition/subtraction
+IRMode IR;
+JoystickMode Joystick;
+OmnibMode Omnibot;
+Mode *modeList[] = {&manualYaw, &manualPitch};
+Mode *controllerList[] = {&IR, &Joystick, &Omnibot};
+ModesManager modeManager(modeList, sizeof(modeList) / sizeof(modeList[0]));
+ModesManager controllerManager(controllerList, sizeof(controllerList) / sizeof(controllerList[0]));
 
 #pragma endregion
 
@@ -92,23 +75,14 @@ ModesManager modeManager(modeList, sizeof(modeList) / sizeof(modeList[0]));     
 
 void setup()
 {
-  // Booting Serial and Wire
   SERIAL_BEGIN(115200);
-  SERIAL_PRINTLN("Version 1.0; 3/13/2026; MP Handoff SG2JZ");
+  SERIAL_PRINTLN("Controllers Hack - Robot Ranger");
   Wire.begin();
   Wire.setClock(400000);
 
-  // Initalizing hardware and setting starting mode
   initPins();
   initHardware();
   robot.defaultOffsets();
-  checkEEPROM(); // Overrides default offsets if user had previously calibrated robot
-  modeManager.setMode(&automatic);
-
-  // Printouts for user to diagnose
-  SERIAL_PRINTLN(robot.TILT_ADJUST);
-  SERIAL_PRINTLN(robot.YAW_OFFSET_MIN);
-  SERIAL_PRINTLN(robot.YAW_OFFSET_MAX);
 }
 
 #pragma endregion
@@ -124,8 +98,30 @@ void loop()
 {
   robot.currTime = millis();
   robot.currButton = getButton(analogRead(BUTTON_RESISTOR_LADDER));
-  handleButtonInput();
-  modeManager.runStateMachine();
+
+  if (robot.selectController)
+  {
+    if (robot.controllerIndex == 0)
+    {
+      handleButtonInput();
+      modeManager.runStateMachine();
+    }
+    else
+    {
+      controllerManager.runStateMachine();
+    }
+  }
+  else
+  {
+    handleButtonInputControllerSelect();
+    robot.leds[0] = robot.controllerColors[robot.controllerIndex];
+    FastLED.show();
+    if (robot.currButton == 1)
+    {
+      enterController();
+      blinkOnEnter(3, 200);
+    }
+  }
 }
 #pragma endregion
 
@@ -182,6 +178,52 @@ int8_t getButton(int16_t v)
   return 0;
 }
 
+void enterController()
+{
+  robot.selectController = true;
+  switch (robot.controllerIndex)
+  {
+  case 0:
+    modeManager.setMode(&manualYaw);
+    break;
+  case 1:
+    controllerManager.setMode(&IR);
+    break;
+  case 2:
+    controllerManager.setMode(&Joystick);
+    break;
+  case 3:
+    controllerManager.setMode(&Omnibot);
+    break;
+  }
+}
+
+void blinkOnEnter(int8_t numBlinks, uint16_t blinkTime)
+{
+  int8_t count = 0;
+  bool ledOn = false;
+  uint32_t lastBlinkTime = millis();
+  while (count <= numBlinks * 2)
+  {
+    uint32_t currentTime = millis();
+    if (currentTime - lastBlinkTime >= blinkTime)
+    {
+      ledOn = !ledOn;
+      lastBlinkTime = currentTime;
+      if (ledOn)
+      {
+        robot.leds[0] = robot.controllerColors[robot.controllerIndex];
+      }
+      else
+      {
+        FastLED.clear();
+      }
+      FastLED.show();
+      count++;
+    }
+  }
+}
+
 /*
  ************************************************************************************
  * This function checks if a button is pressed, held, or released, and handles accordingly.
@@ -191,9 +233,6 @@ int8_t getButton(int16_t v)
  */
 void handleButtonInput()
 {
-  // SPECIAL CASE FOR CALIBRATION MODE
-  if (robot.calibrating)
-    handleCalibration();
 
   // New button press
   if (robot.currButton != 0 && robot.currButton != robot.lastButton)
@@ -236,109 +275,63 @@ void handleButtonInput()
   }
 }
 
-void waitForButtonPress()
+void handleButtonInputControllerSelect()
 {
-  bool pressed = false;
-  while (!pressed)
+  // New button press
+  if (robot.currButton != 0 && robot.currButton != robot.lastButton)
   {
-    if (!digitalRead(BUTTON_RESISTOR_LADDER))
-      pressed = true;
+    robot.pressStart = millis();
+    robot.holding = false;
+    robot.lastButton = robot.currButton;
   }
-}
 
-void handleCalibration()
-{
-  if (modeManager.currentMode() != &calibration && !robot.runningYawCalibration && !robot.runningTiltCalibration)
+  // Handle button hold and repeat
+  if (robot.currButton == robot.lastButton && robot.currButton != 0)
   {
-    modeManager.setMode(&calibration);
-  }
-  else if (modeManager.currentMode() != &automatic && (robot.runningYawCalibration || robot.runningTiltCalibration))
-  {
-    modeManager.setMode(&automatic);
-  }
-}
+    uint32_t now = millis();
+    uint32_t heldTime = now - robot.pressStart;
 
-#pragma endregion
-
-#pragma region DISTANCE MATH
-
-/*
- ************************************************************************************
- * The following functions are the math for calculating the launch angle.
- * They basically brute force search for the launch angle that results in the closest distance to the target.
- * There is also a function to correct for the offset of the sensor, both physically and deviation based from manufacturing.
- ************************************************************************************
- */
-int16_t calculateLaunchAngle(float distance)
-{
-  if (distance > MAXD)
-    return 0;
-
-  robot.sensAdj = calcOffset(distance);
-  float adjustedDistance = distance + cupR + baseR + sensorOffset + robot.sensAdj; // adjusted to the right reference frame
-  SERIAL_PRINTLN(adjustedDistance);
-  /*
-   ************************************************************************************
-   * Tolerance parameters for the brute force search.
-   * You start by having strict criteria for "closeness" and then relax the criteria as you go
-   * through the math in an attempt to find some solution, even if it's not the perfect solution.
-   ************************************************************************************
-   */
-  float initialTolerance = 0.5;
-  float maxTolerance = 3.5;
-  float toleranceIncrement = 0.5;
-
-  for (float tolerance = initialTolerance; tolerance <= maxTolerance; tolerance += toleranceIncrement)
-  {
-    // Iterate through all possible angles
-    for (float angle = 90.0; angle >= 45.0; angle -= 0.1)
+    if (!robot.holding && heldTime >= robot.HOLD_TIME)
     {
-      float angleRad = radians(angle); // Convert angle to radians
-      float predictedDistance = calculateRoot(angleRad);
-      float perAngleCorrections = launcherR * cos(angleRad) - (barrelAdjust * sin(angleRad)); // Based off the physical geometry of the robot
+      robot.holding = true;
+      robot.lastRepeat = now;
+      incrementController(robot.currButton);
+    }
 
-      float difference = abs(predictedDistance - (adjustedDistance - perAngleCorrections));
-
-      // Check if the predicted distance is valid and within the current tolerance
-      if (predictedDistance > 0 && difference <= tolerance)
-      {
-        return (int)round((angle - 45.0) * GEAR_RATIO); // Return adjusted angle (aka solution)
-      }
+    // Repeat action while holding
+    if (robot.holding && (now - robot.lastRepeat >= robot.REPEAT_INTERVAL))
+    {
+      robot.lastRepeat = now;
+      incrementController(robot.currButton);
     }
   }
 
-  return 0; // Return 0 if no match is found (aka no solution)
+  // Handle short press on release
+  if (robot.currButton == 0 && robot.lastButton != 0)
+  {
+    if (!robot.holding)
+    {
+      incrementController(robot.lastButton);
+    }
+    robot.lastButton = 0;
+    robot.holding = false;
+  }
 }
 
-// Sensor offset compensation, empirically derived
-float calcOffset(float distance)
+void incrementController(int16_t direction)
 {
-  return floatMap(distance, 0.0, (float)MAXD, (float)robot.sensAdjMin, (float)robot.sensAdjMax);
-}
-
-/*
- ************************************************************************************
- * The following function calculates the real root of the quadratic trajectory equation.
- ************************************************************************************
- */
-float calculateRoot(float thetaRad)
-{
-  // starting height, which changes with angle
-  float h0 = h + (launcherR * sin(thetaRad)) - (barrelAdjust * cos(thetaRad));
-
-  // Coefficients for the quadratic trajectory equation
-  float a = -(g / (2 * pow(robot.v0 * cos(thetaRad), 2)));
-  float b = tan(thetaRad);
-  float c = h0;
-  float discriminant = b * b - 4 * a * c;
-
-  // Check if there is a real solution
-  if (discriminant < 0)
-    return -1;
-
-  // Calculate the positive root of x
-  float xRoot = (-b - sqrt(discriminant)) / (2 * a);
-  return xRoot > 0 ? xRoot : -1;
+  if (direction == 2)
+  {
+    robot.controllerIndex--;
+    if (robot.controllerIndex < 0)
+      robot.controllerIndex = robot.numControllers - 1;
+  }
+  else if (direction == 3)
+  {
+    robot.controllerIndex++;
+    if (robot.controllerIndex >= robot.numControllers)
+      robot.controllerIndex = 0;
+  }
 }
 
 #pragma endregion
@@ -420,14 +413,14 @@ void launchRoutine(uint16_t waitTimeMs)
   uint32_t currTime = 0;
   uint32_t lastTime = 0;
 
-  delay(SMOOTHING); // Quick smooth out
+  delay(SMOOTHING);
 
   while (runningRoutine)
   {
     currTime = millis();
     switch (currLaunchState)
     {
-    case 0: // pull back
+    case 0: // pull
       robot.launchServo.write(0);
       if (digitalRead(BREAK_PIN) == LOW)
       {
@@ -436,7 +429,7 @@ void launchRoutine(uint16_t waitTimeMs)
         currLaunchState = 1;
       }
       break;
-    case 1: // wait to settle
+    case 1: // wait
       if (currTime - lastTime > waitTimeMs)
         currLaunchState = 2;
       break;
@@ -489,17 +482,6 @@ void initPins()
 void initHardware()
 {
 
-  // Initializing ToF sensor
-  if (!robot.ranger.init())
-    digitalWrite(LED_BUILTIN, HIGH);
-
-  // ToF Sensor Settings
-  // TIME OF FLIGHT SENSOR - Reference FOOTNOTES for more information about this sensor.
-  robot.ranger.setDistanceMode(VL53L1X::Short);
-  robot.ranger.setMeasurementTimingBudget(TIMING_BUDGET);
-  robot.ranger.setROISize(4, 4);
-  robot.ranger.setROICenter(199);
-
   // Attaching servos to pins
   robot.yawServo.attach(YAW_SERVO_PIN);
   robot.pitchServo.attach(PITCH_SERVO_PIN);
@@ -527,42 +509,9 @@ void initHardware()
  ************************************************************************************
  */
 
-void checkEEPROM()
-{
-  bool tiltFlag = true;
-  bool yawFlag = true;
-  EEPROM.get(calibrateAddressTilt, tiltFlag);
-  EEPROM.get(calibrateAddressYaw, yawFlag);
-  if (!tiltFlag)
-  { // EEPROM is 255 by default which is true, so actually false is the calibrated flag
-    EEPROM.get(tiltAddress, robot.TILT_ADJUST);
-  }
-  if (!yawFlag)
-  {
-    EEPROM.get(yawOffsetAddress, robot.YAW_OFFSET_MIN);
-    robot.YAW_OFFSET_MAX = robot.YAW_OFFSET_MIN + robot.YAW_EXTRA;
-  }
-}
-
 float floatMap(float x, float in_min, float in_max, float out_min, float out_max)
 {
   return (float)(x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-
-// Linked to the IDE GUI that helps to expand or change offset
-float expand(float value, float value_middle, float defaultOffset, float expansionFactor, bool Yaw)
-{
-  expansionFactor = constrain(expansionFactor, 0.0f, 2.0f);
-  float tilt_reference = (value - value_middle) / 10.0f;
-  float result = defaultOffset + tilt_reference * (expansionFactor - 1.0f);
-  if (Yaw)
-  {
-    return constrain(result, YAW_OFFSET_MIN_BOUND, YAW_OFFSET_MAX_BOUND);
-  }
-  else
-  {
-    return constrain(result, TILT_ADJUST_MIN, TILT_ADJUST_MAX);
-  }
 }
 
 #pragma endregion

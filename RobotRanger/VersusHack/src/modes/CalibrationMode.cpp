@@ -41,9 +41,6 @@ void CalibrationMode::runStateMachine()
         }
     case CALIBRATION_SELECT:
     {
-        // Read twice to allow ADC to settle after potential button reads on adjacent pin
-        analogRead(POT_PIN);  // Dummy read to settle ADC
-        delayMicroseconds(100);  // Small delay for ADC settling
         int16_t analogValue = map(analogRead(POT_PIN), 0, 1030, 0, 3);
         if (analogValue == 0)
         {
@@ -116,13 +113,7 @@ void CalibrationMode::setColor(CRGB color)
 void CalibrationMode::calibrationRoutinePitch()
 {
     // Map potentiometer to tilt adjustment range
-    // Read twice to allow ADC to settle after potential button reads on adjacent pin
-    SERIAL_PRINTLN(analogRead(POT_PIN));  // Dummy read to settle ADC
-    delayMicroseconds(250);  // Small delay for ADC settling
-    float potValue = analogRead(POT_PIN);  // Actual reading
-    SERIAL_PRINTLN(potValue);
-    robot.TILT_ADJUST = floatMap(potValue, 23.0f, 1000.0f, TILT_ADJUST_MIN, TILT_ADJUST_MAX);
-    SERIAL_PRINTLN(robot.TILT_ADJUST);
+    robot.TILT_ADJUST = floatMap((float)analogRead(POT_PIN), 0.0, 1023.0, TILT_ADJUST_MIN, TILT_ADJUST_MAX);
 
     // Save to EEPROM
     EEPROM.put(tiltAddress, robot.TILT_ADJUST);
@@ -136,10 +127,7 @@ void CalibrationMode::calibrationRoutinePitch()
 void CalibrationMode::calibrationRoutineYaw()
 {
     // Yaw offset calibration
-    // Read twice to allow ADC to settle after potential button reads on adjacent pin
-    analogRead(POT_PIN);  // Dummy read to settle ADC
-    delayMicroseconds(100);  // Small delay for ADC settling
-    robot.YAW_OFFSET_MIN = map(analogRead(POT_PIN), 23, 1000, YAW_OFFSET_MIN_BOUND, YAW_OFFSET_MAX_BOUND);
+    robot.YAW_OFFSET_MIN = map(analogRead(POT_PIN), 0, 1023, YAW_OFFSET_MIN_BOUND, YAW_OFFSET_MAX_BOUND);
     robot.YAW_OFFSET_MAX = robot.YAW_OFFSET_MIN + robot.YAW_EXTRA;
 
     // Save to EEPROM

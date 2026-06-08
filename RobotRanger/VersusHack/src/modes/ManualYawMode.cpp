@@ -11,7 +11,6 @@ void ManualYawMode::enter()
 {
     setColor(CRGB(0, 0, 255)); // Blue for Yaw
     initialPotValue = analogRead(POT_PIN);
-    lastYawAngle = visualYawCenterPWM; // Center position
     robot.yawServo.writeMicroseconds(lastYawAngle);
     SERIAL_PRINTLN("ManualYawMode entered");
 }
@@ -50,6 +49,7 @@ void ManualYawMode::setColor(CRGB color)
 void ManualYawMode::manualYaw()
 {
     int16_t rawValue = analogRead(POT_PIN);
+    if(!robot.startTiming) robot.startingPlayTime = millis(); 
 
     // Only move if potentiometer has been touched (changed from initial value)
     if (abs(rawValue - initialPotValue) > 10)
@@ -57,6 +57,7 @@ void ManualYawMode::manualYaw()
         int16_t angleValue = map(rawValue, 0, 1023, startPWM, endPWM);
         robot.yawServo.writeMicroseconds(angleValue);
         lastYawAngle = angleValue; // Update lock position
+        if(!robot.startTiming) robot.startTiming = true; 
     }
 
     if (robot.currButton == 1)

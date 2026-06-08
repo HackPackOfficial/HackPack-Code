@@ -24,6 +24,7 @@ void AutoMode::enter()
 
 void AutoMode::exit()
 {
+  SERIAL_PRINTLN("AutoMode exited");
   resetPositions();
 }
 
@@ -51,6 +52,7 @@ void AutoMode::runStateMachine()
     if (robot.currButton == 1)
     {
       servoEase(startPWM);
+      robot.startingSolveTime = millis(); 
       autoState = STATE_SWEEP;
     }
     break;
@@ -66,7 +68,9 @@ void AutoMode::runStateMachine()
   case STATE_DONE:
     resetPositions();
     resetMemory();
-    autoState = STATE_IDLE;
+    robot.solveTime = millis() - robot.startingSolveTime; 
+    robot.yourTurn = true; 
+    autoState = STATE_IDLE; 
     robot.runningYawCalibration = false;
     robot.runningTiltCalibration = false;
     break;
@@ -127,26 +131,23 @@ void AutoMode::handleLockServo()
 {
   int16_t currHit = 0;
   int16_t lastHit = 0;
-  int8_t positionTolerance = 5; // skips hit if its in the same position as the last hit and within 5 steps
-
-  // cycles through all hits
+  int8_t positionTolerance = 5; // skips hit if its in the same position as the last hit and within 3 steps
   for (int j : hits)
   {
     if (j != 0)
     {
       int adjustedOffset = ceil(map(j, 1.0, POSITIONS - 1, robot.YAW_OFFSET_MAX, robot.YAW_OFFSET_MIN));
-      currHit = j - expand(j, POSITIONS / 2, adjustedOffset, robot.YAW_EXPANSION, true); // takes expansion into account
-      if (abs(currHit - lastHit) > positionTolerance || currHit < positionTolerance)     // skips hit if its in the same position as the last hit and within 5 steps
+      currHit = j - adjustedOffset;
+      if (abs(currHit - lastHit) > positionTolerance || currHit < positionTolerance) // skips hit if its in the same position as the last hit and within 3 steps
       {
         servoEase(conversionYawMicro(currHit));
         digitalWrite(LASER_PIN, HIGH);
         int16_t hitDistance = smoothedDistances[j];
-        SERIAL_PRINTLN(hitDistance);
         int16_t tilt = calculateLaunchAngle(hitDistance);
 
         if (tilt != 0)
         {
-          tilt = conversionPitchMicro(round(tilt + expand(tilt, 90.0, robot.TILT_ADJUST, robot.PITCH_EXPANSION, false))); // takes expansion into account
+          tilt = conversionPitchMicro(round(tilt + robot.TILT_ADJUST));
           robot.pitchServo.writeMicroseconds(tilt);
           delay(200);
           launchRoutine(robot.waitTime);

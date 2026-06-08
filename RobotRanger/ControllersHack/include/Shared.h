@@ -8,7 +8,6 @@
 #pragma region LIBRARIES
 #include <Arduino.h>
 #include <Wire.h>
-#include <VL53L1X.h>
 #include <Servo.h>
 #include <FastLED.h>
 #pragma endregion
@@ -23,27 +22,25 @@ void servoEase(int16_t);
 void servoEase(int16_t, bool, int16_t delayMs = 30); // overloading ServoEase
 void launchRoutine(uint16_t);
 
-// LAUNCHING MATH
-float calculateRoot(float);
-int16_t calculateLaunchAngle(float);
-float calcOffset(float);
 
 // BUTTONS
 int8_t getButton(int16_t);
 void handleButtonInput();
-void waitForButtonPress();
+
 
 // SETUP
 void initPins();
 void initHardware();
 void checkEEPROM();
 
-// CALIBRATION
-void handleCalibration();
-
-// MAPPING & EXPANSION
+// FLOAT MAP
 float floatMap(float, float, float, float, float);
-float expand(float, float, float, float, bool);
+
+// HACKS
+void incrementController(int16_t);
+void handleButtonInputControllerSelect();
+void enterController(); 
+void blinkOnEnter(int8_t, uint16_t); 
 
 #pragma endregion
 
@@ -85,15 +82,15 @@ float expand(float, float, float, float, bool);
 #define backlashCompensation 30 // compensates for motor backlash when easing
 
 // GEOMETRY & CONSTANTS - Reference FOOTNOTES for more information about this section.
-#define MAXD 500          // max distance 500mm or ~ 1.5 ft - derived from ToF sensor resolution reliability at distance
-#define GEAR_RATIO 4      // pitch gear to launcher ratio
-#define cupR 35.0         // cup radius in mm
-#define baseR 90.0        // base radius in mm
-#define launcherR 115.0   // launcher radius arm in mm
-#define sensorOffset 1.0  // sensor offset from front of robot in mm
-#define barrelAdjust 7.75 // barrel adjust in mm
-#define g 9810.0          // mm/s^2
-#define h 70.0            // top of cup to center of launcher in mm
+#define MAXD 500                    // max distance 500mm or ~ 1.5 ft - derived from ToF sensor resolution reliability at distance
+#define GEAR_RATIO 4                // pitch gear to launcher ratio
+#define cupR 33.0                   // cup radius in mm
+#define baseR 90.0                  // base radius in mm
+#define launcherR 115.0             // launcher radius arm in mm
+#define sensorOffset 1.0            // sensor offset from front of robot in mm
+#define barrelAdjust 7.75           // barrel adjust in mm
+#define g 9810.0                    // mm/s^2
+#define h 70.0                      // top of cup to center of launcher in mm
 
 #pragma endregion
 
@@ -121,8 +118,6 @@ public:
   }
 
   // HARDWARE OBJECTS
-  VL53L1X ranger;            // ToF sensor object
-  VL53L1X::RangingData data; // ToF sensor data object
   Servo yawServo;
   Servo pitchServo;
   Servo launchServo;
@@ -138,14 +133,14 @@ public:
 
   // BUTTON HANDLING VARIABLES
   int16_t currButton = 0;
-  uint32_t pressStart = 0;                 // Time when button press started
-  uint32_t lastRepeat = 0;                 // Time of last repeat action
-  bool holding = false;                    // Whether button is being held
-  int16_t lastButton = 0;                  // Last button state
-  const int16_t longPressThreshold = 3500; // Threshold for long press (ms)
-  const uint32_t HOLD_TIME = 500;          // Time to hold for mode change (ms)
-  const uint32_t REPEAT_INTERVAL = 200;    // Time between repeats while holding (ms)
-  float sensAdj = 0;                       // sensor offset compensation initalization (do not change)
+  uint32_t pressStart = 0;              // Time when button press started
+  uint32_t lastRepeat = 0;              // Time of last repeat action
+  bool holding = false;                      // Whether button is being held
+  int16_t lastButton = 0;                        // Last button state
+  const int16_t longPressThreshold = 3500;       // Threshold for long press (ms)
+  const uint32_t HOLD_TIME = 500;       // Time to hold for mode change (ms)
+  const uint32_t REPEAT_INTERVAL = 200; // Time between repeats while holding (ms)
+  float sensAdj = 0;                         // sensor offset compensation initalization (do not change)
 
   /*
   *********************************************************************************************
@@ -154,25 +149,30 @@ public:
   */
 
   // LAUNCHING VARIABLES
-  float v0 = 2250;             // launch velocity in mm/s
-  int16_t sensAdjMin = 0;      // sensor offset compensation min (see calcOffset function for usage)
-  int16_t sensAdjMax = 20;     // sensor offset compensation max (see calcOffset function for usage)
-  uint16_t waitTime = 500;     // wait time in ms to let ball "settle" before launch
+  float v0 = 2200;        // launch velocity in mm/s
+  int16_t sensAdjMin = -5;    // sensor offset compensation min (see calcOffset function for usage)
+  int16_t sensAdjMax = 20;    // sensor offset compensation max (see calcOffset function for usage)
+  uint16_t waitTime = 500;    // wait time in ms to let ball "settle" before launch
   uint16_t debounceTime = 175; // debounce time in ms to prevent launcher from stalling
 
   // PITCH & YAW OFFSETS - Tunable in function below if needed.
-  float TILT_ADJUST;      // pitch tilt adjust (tunable below)
+  float TILT_ADJUST;  // pitch tilt adjust (tunable below)
   int16_t YAW_OFFSET_MIN; // yaw offset min (tunable below)
   int16_t YAW_OFFSET_MAX; // yaw offset max (tunable below)
-  int16_t YAW_EXTRA = 4;  // tunable extra offset for yaw calibration
-  float PITCH_EXPANSION = 1.0;
-  float YAW_EXPANSION = 1.0;
+  int16_t YAW_EXTRA = 5;  // tunable extra offset for yaw calibration
+
+  // HACK TRACKING VARIABLES
+  bool selectController = false; 
+  static const uint8_t numControllers = 4;
+  CRGB controllerColors[numControllers] = {CRGB(0, 0, 255), CRGB(250, 175, 0), CRGB(0, 255, 0), CRGB(255, 0, 0)};
+  int8_t controllerIndex = 0;
+
 
   // The following are basically the median values of the error deviation in both pitch and yaw.
   void defaultOffsets()
   {
-    TILT_ADJUST = 10.0;
-    YAW_OFFSET_MIN = 20.0;
+    TILT_ADJUST = 18.0;
+    YAW_OFFSET_MIN = 15;
     YAW_OFFSET_MAX = YAW_OFFSET_MIN + YAW_EXTRA; // offset needs to be more aggressive at the end (backlash accumalates)
   }
 
@@ -195,10 +195,10 @@ private:
 /*
 *********************************************************************************************
 * The following is used to toggle the serial output. This is useful for debugging.
-* If you set it to 0, no serial output will be printed - this will save some memory on the micontroller.
+* It is set to 0 by default, which means no serial output will be printed - this is to save memory on the micontroller.
 *********************************************************************************************
 */
-#define USE_SERIAL 1 // 0 is disabled, 1 is enabled, 1 by default
+#define USE_SERIAL 1 // 0 is disabled, 1 is enabled
 
 #if USE_SERIAL
 #define SERIAL_PRINT(x) Serial.print(x)

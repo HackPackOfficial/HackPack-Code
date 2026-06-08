@@ -31,30 +31,14 @@
 
 /*
  ************************************************************************************
- * Robot Ranger Stock Code
- * June 2026
- * Version: 1.0
+ * Robot Ranger Versus HACK Code
  * Author: Crunchlabs LLC
  *
- *   This stock code runs the Robot Ranger, a projectile motion launcher
- *   coupled with a time of flight sensor. Time of flight is a method
- *   used to measure the distance to a target, and is the underlying
- *   tech for radar, sonar, lidar, and more! Updates may occur as we add more
- *   features and improve the code. Currently, it includes a variety of
- *   modes, including auto-aiming, manual control, and a reflex game.
- *
- *   Each mode is a class that inherits from the "Mode" class.
- *   This allows for modes to be added without changing the main code too much - a benefit over a
- *   multi-nested state machine. Hack your own modes into the code! This flexibility is the basis of
- *   polymorphism, a core concept in Object Oriented Programming.
- *
- *   To add modes, just create another pair of .h and .cpp files in the modes folder under src,
- *   and add them to the modeList array in the setup declaration titled "ModesManager".
- *   You can follow the structure below.
- *
- *   For more info and to access the hacks, visit the Crunchlabs IDE. For community updates,
- *   check out our Discord server. For help making your own hacks, ask our very own Mark Robot
- *   on the IDE!
+ *   This is revised code that runs a new play mode for the Robot Ranger. It is a simplified version of the stock code
+ *   that alternates between two modes: Automatic and Manual. The robot starts in Automatic mode, and when the button is pressed
+ *   it searches for the targets (cups) you lay out. It then attempts to launch the projectiles into the cups. After that it resets and
+ *   goes into manual mode where you can control the yaw and pitch servos to aim yourself at the targets. You have a time limit to 
+ *   "beat" the robot base on its run time in the Automatic mode. See if you can best it!
  ************************************************************************************
  */
 
@@ -69,22 +53,20 @@
  * If removing modes, be sure to recompile before uploading to see if errors occur.
  ************************************************************************************
  */
-#include "Shared.h"       //Header file for shared variables
-#include "ModesManager.h" //Header for mode selection class
-
-
+#include "Shared.h"
+#include "ModesManager.h"
 #include "modes_headers/CalibrationMode.h"
 #include "modes_headers/AutoMode.h"
-#include "modes_headers/ReflexMode.h"
 #include "modes_headers/ManualYawMode.h"
 #include "modes_headers/ManualPitchMode.h"
 CalibrationMode calibration;
 AutoMode automatic;
-ReflexMode reflex;
 ManualYawMode manualYaw;
 ManualPitchMode manualPitch;
-Mode *modeList[] = {&calibration, &automatic, &reflex, &manualYaw, &manualPitch}; // Add modes HERE
-ModesManager modeManager(modeList, sizeof(modeList) / sizeof(modeList[0]));       // DO NOT touch this line, allows for dynamic mode addition/subtraction
+Mode *robotModeList[] = {&calibration, &automatic};
+Mode *yourModeList[] = {&manualYaw, &manualPitch};
+ModesManager robotModeManager(robotModeList, sizeof(robotModeList) / sizeof(robotModeList[0])); // do not touch this, allows for dynamic mode addition/subtraction
+ModesManager yourModeManager(yourModeList, sizeof(yourModeList) / sizeof(yourModeList[0]));     // do not touch this, allows for dynamic mode addition/subtraction
 
 #pragma endregion
 
@@ -92,23 +74,16 @@ ModesManager modeManager(modeList, sizeof(modeList) / sizeof(modeList[0]));     
 
 void setup()
 {
-  // Booting Serial and Wire
   SERIAL_BEGIN(115200);
-  SERIAL_PRINTLN("Version 1.0; 3/13/2026; MP Handoff SG2JZ");
+  SERIAL_PRINTLN("Versus Hack - Robot Ranger");
   Wire.begin();
   Wire.setClock(400000);
 
-  // Initalizing hardware and setting starting mode
   initPins();
   initHardware();
   robot.defaultOffsets();
-  checkEEPROM(); // Overrides default offsets if user had previously calibrated robot
-  modeManager.setMode(&automatic);
-
-  // Printouts for user to diagnose
-  SERIAL_PRINTLN(robot.TILT_ADJUST);
-  SERIAL_PRINTLN(robot.YAW_OFFSET_MIN);
-  SERIAL_PRINTLN(robot.YAW_OFFSET_MAX);
+  checkEEPROM();
+  robotModeManager.setMode(&automatic);
 }
 
 #pragma endregion
@@ -124,9 +99,30 @@ void loop()
 {
   robot.currTime = millis();
   robot.currButton = getButton(analogRead(BUTTON_RESISTOR_LADDER));
-  handleButtonInput();
-  modeManager.runStateMachine();
+  if (robot.robotTurn)
+  {
+    handleButtonInputRobot();
+    robotModeManager.runStateMachine();
+    if(robot.yourTurn){
+      robot.robotTurn = false;
+      yourModeManager.setMode(&manualYaw);
+    }
+  }
+  else
+  {
+    handleButtonInputYour();
+    yourModeManager.runStateMachine();
+    if(millis() - robot.startingPlayTime >= robot.solveTime) {
+      robot.robotTurn = true; 
+      robot.yourTurn = false; 
+      robot.solveTime = INT32_MAX; 
+      robot.startTiming = false; 
+      robotModeManager.setMode(&automatic); 
+      
+    }
+  }
 }
+
 #pragma endregion
 
 #pragma region SHARED FUNCTIONS
@@ -189,7 +185,7 @@ int8_t getButton(int16_t v)
  * See FOOTNOTES for more information about the button handling and resistor ladder.
  ************************************************************************************
  */
-void handleButtonInput()
+void handleButtonInputRobot()
 {
   // SPECIAL CASE FOR CALIBRATION MODE
   if (robot.calibrating)
@@ -213,14 +209,14 @@ void handleButtonInput()
     {
       robot.holding = true;
       robot.lastRepeat = now;
-      modeManager.changeMode(robot.currButton);
+      robotModeManager.changeMode(robot.currButton);
     }
 
     // Repeat action while holding
     if (robot.holding && (now - robot.lastRepeat >= robot.REPEAT_INTERVAL))
     {
       robot.lastRepeat = now;
-      modeManager.changeMode(robot.currButton);
+      robotModeManager.changeMode(robot.currButton);
     }
   }
 
@@ -229,10 +225,76 @@ void handleButtonInput()
   {
     if (!robot.holding)
     {
-      modeManager.changeMode(robot.lastButton);
+        robotModeManager.changeMode(robot.lastButton);
     }
     robot.lastButton = 0;
     robot.holding = false;
+  }
+}
+
+void handleButtonInputYour()
+{
+
+  // New button press
+  if (robot.currButton != 0 && robot.currButton != robot.lastButton)
+  {
+    robot.pressStart = millis();
+    robot.holding = false;
+    robot.lastButton = robot.currButton;
+  }
+
+  // Handle button hold and repeat
+  if (robot.currButton == robot.lastButton && robot.currButton != 0)
+  {
+    uint32_t now = millis();
+    uint32_t heldTime = now - robot.pressStart;
+
+    if (!robot.holding && heldTime >= robot.HOLD_TIME)
+    {
+      robot.holding = true;
+      robot.lastRepeat = now;
+      yourModeManager.changeMode(robot.currButton);
+    }
+
+    // Repeat action while holding
+    if (robot.holding && (now - robot.lastRepeat >= robot.REPEAT_INTERVAL))
+    {
+      robot.lastRepeat = now;
+      yourModeManager.changeMode(robot.currButton);
+    }
+  }
+
+  // Handle short press on release
+  if (robot.currButton == 0 && robot.lastButton != 0)
+  {
+    if (!robot.holding)
+    {
+        yourModeManager.changeMode(robot.lastButton);
+    }
+    robot.lastButton = 0;
+    robot.holding = false;
+  }
+}
+
+void decideTurn()
+{
+  if (millis() - robot.startingPlayTime >= robot.solveTime)
+  {
+    robot.yourTurn = true;
+    robot.solveTime = INT32_MAX;
+  }
+
+  if (robot.robotTurn)
+  {
+
+    robot.startingPlayTime = millis();
+    robot.robotTurn = false;
+  }
+
+  if (robot.yourTurn)
+  {
+
+    robot.yourTurn = false;
   }
 }
 
@@ -248,13 +310,13 @@ void waitForButtonPress()
 
 void handleCalibration()
 {
-  if (modeManager.currentMode() != &calibration && !robot.runningYawCalibration && !robot.runningTiltCalibration)
+  if (robotModeManager.currentMode() != &calibration && !robot.runningYawCalibration && !robot.runningTiltCalibration)
   {
-    modeManager.setMode(&calibration);
+    robotModeManager.setMode(&calibration);
   }
-  else if (modeManager.currentMode() != &automatic && (robot.runningYawCalibration || robot.runningTiltCalibration))
+  else if (robotModeManager.currentMode() != &automatic && (robot.runningYawCalibration || robot.runningTiltCalibration))
   {
-    modeManager.setMode(&automatic);
+    robotModeManager.setMode(&automatic);
   }
 }
 
@@ -276,7 +338,7 @@ int16_t calculateLaunchAngle(float distance)
 
   robot.sensAdj = calcOffset(distance);
   float adjustedDistance = distance + cupR + baseR + sensorOffset + robot.sensAdj; // adjusted to the right reference frame
-  SERIAL_PRINTLN(adjustedDistance);
+
   /*
    ************************************************************************************
    * Tolerance parameters for the brute force search.
@@ -310,7 +372,7 @@ int16_t calculateLaunchAngle(float distance)
   return 0; // Return 0 if no match is found (aka no solution)
 }
 
-// Sensor offset compensation, empirically derived
+// sensor offset compensation, empirically derived
 float calcOffset(float distance)
 {
   return floatMap(distance, 0.0, (float)MAXD, (float)robot.sensAdjMin, (float)robot.sensAdjMax);
@@ -340,8 +402,6 @@ float calculateRoot(float thetaRad)
   float xRoot = (-b - sqrt(discriminant)) / (2 * a);
   return xRoot > 0 ? xRoot : -1;
 }
-
-#pragma endregion
 
 #pragma region LAUNCHING
 
@@ -420,14 +480,14 @@ void launchRoutine(uint16_t waitTimeMs)
   uint32_t currTime = 0;
   uint32_t lastTime = 0;
 
-  delay(SMOOTHING); // Quick smooth out
+  delay(SMOOTHING);
 
   while (runningRoutine)
   {
     currTime = millis();
     switch (currLaunchState)
     {
-    case 0: // pull back
+    case 0: // pull
       robot.launchServo.write(0);
       if (digitalRead(BREAK_PIN) == LOW)
       {
@@ -436,7 +496,7 @@ void launchRoutine(uint16_t waitTimeMs)
         currLaunchState = 1;
       }
       break;
-    case 1: // wait to settle
+    case 1: // wait
       if (currTime - lastTime > waitTimeMs)
         currLaunchState = 2;
       break;
@@ -547,22 +607,6 @@ void checkEEPROM()
 float floatMap(float x, float in_min, float in_max, float out_min, float out_max)
 {
   return (float)(x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-
-// Linked to the IDE GUI that helps to expand or change offset
-float expand(float value, float value_middle, float defaultOffset, float expansionFactor, bool Yaw)
-{
-  expansionFactor = constrain(expansionFactor, 0.0f, 2.0f);
-  float tilt_reference = (value - value_middle) / 10.0f;
-  float result = defaultOffset + tilt_reference * (expansionFactor - 1.0f);
-  if (Yaw)
-  {
-    return constrain(result, YAW_OFFSET_MIN_BOUND, YAW_OFFSET_MAX_BOUND);
-  }
-  else
-  {
-    return constrain(result, TILT_ADJUST_MIN, TILT_ADJUST_MAX);
-  }
 }
 
 #pragma endregion

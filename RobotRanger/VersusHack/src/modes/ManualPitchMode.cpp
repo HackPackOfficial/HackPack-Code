@@ -50,6 +50,7 @@ void ManualPitchMode::setColor(CRGB color)
 void ManualPitchMode::manualPitch()
 {
     int rawValue = analogRead(POT_PIN);
+    if(!robot.startTiming) robot.startingPlayTime = millis(); 
 
     // Only move if potentiometer has been touched (changed from initial value)
     if (abs(rawValue - initialPotValue) > 10)
@@ -58,6 +59,7 @@ void ManualPitchMode::manualPitch()
         int16_t angleValue = map(rawValue, 0, 1023, maxTip, startPWM); // Reversed mapping for pitch
         robot.pitchServo.writeMicroseconds(angleValue);
         lastPitchAngle = angleValue; // Update lock position
+        if(!robot.startTiming) robot.startTiming = true; 
     }
 
     if (robot.currButton == 1)
