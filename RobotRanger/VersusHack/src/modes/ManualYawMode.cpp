@@ -9,7 +9,11 @@
 
 void ManualYawMode::enter()
 {
-    setColor(CRGB(0, 0, 255)); // Blue for Yaw
+    setColor(CRGB(
+        0,
+        0,
+        255
+    )); // Blue for Yaw
     initialPotValue = analogRead(POT_PIN);
     robot.yawServo.writeMicroseconds(lastYawAngle);
     SERIAL_PRINTLN("ManualYawMode entered");

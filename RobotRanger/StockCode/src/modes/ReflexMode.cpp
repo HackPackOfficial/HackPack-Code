@@ -12,7 +12,11 @@
 
 void ReflexMode::enter()
 {
-  setColor(CRGB(0, 0, 0)); // White
+  setColor(CRGB(
+    0,
+    0,
+    0
+  )); // White
   SERIAL_PRINTLN("ReflexMode entered");
   resetPositions();
 }
@@ -29,7 +33,11 @@ void ReflexMode::runStateMachine()
   switch (reflexState)
   {
   case STATE_GENERATION:
-    setColor(CRGB(0, 0, 0)); // White
+    setColor(CRGB(
+      0,
+      0,
+      0
+    )); // White
     if (robot.currButton == 1)
     {
       startSequence();

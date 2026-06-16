@@ -9,7 +9,11 @@
 
 void ManualPitchMode::enter()
 {
-    setColor(CRGB(128, 0, 128)); // Purple for Pitch
+    setColor(CRGB(
+        128,
+        0,
+        128
+    )); // Purple for Pitch
     initialPotValue = analogRead(POT_PIN);
     lastPitchAngle = startPWM; // Start position
     robot.pitchServo.writeMicroseconds(lastPitchAngle);

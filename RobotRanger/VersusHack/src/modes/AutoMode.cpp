@@ -13,7 +13,11 @@ void AutoMode::enter()
   resetPositions();
   if (!robot.calibrating)
   {
-    setColor(CRGB(0, 255, 0)); // Green
+    setColor(CRGB(
+      0,
+      255,
+      0
+    )); // Green
   }
   else
   {

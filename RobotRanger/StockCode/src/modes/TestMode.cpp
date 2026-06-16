@@ -11,7 +11,11 @@
 void TestMode::enter()
 {
     SERIAL_PRINTLN("TestMode entered");
-    setColor(CRGB(20, 0, 160)); // Purple
+    setColor(CRGB(
+        20,
+        0,
+        160
+    )); // Purple
     resetPositions();
 }
 

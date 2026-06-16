@@ -41,9 +41,36 @@ private:
     // Generate your own values here for your own robot!
     const int16_t DIFFICULTY_VALUES[difficultyLevels][numParameters] = {
         // movement_delay, fakeout_delay, fakeout_prob, yaw_range, pitch_range, pattern_complexity, delay speed
-        {50, 300, 30, 1600, 1600, 0, 10}, // Easy
-        {25, 250, 35, 1800, 1800, 1, 5},  // Medium
-        {0, 200, 40, 2000, 2000, 2, 0}    // Hard
+        // Easy
+        {
+            50, 
+            300, 
+            30, 
+            1600, 
+            1600, 
+            0,
+            10
+        },
+        // Medium
+        {
+            25,
+            250,
+            35,
+            1800,
+            1800,
+            1,
+            5
+        },
+        // Hard  
+        {
+            0,
+            200,
+            40,
+            2000,
+            2000,
+            2,
+            0
+        }
     };
 
     // Parameter constants for indexing

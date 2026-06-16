@@ -12,7 +12,11 @@ void CalibrationMode::enter()
     SERIAL_PRINTLN("Calibration Mode entered");
     resetPositions();
     calibrationState = CALIBRATION_IDLE;
-    setColor(CRGB(225, 225, 225)); // Gray
+    setColor(CRGB(
+        225,
+        225,
+        225
+    )); // Gray
 }
 
 void CalibrationMode::exit()
@@ -47,15 +51,27 @@ void CalibrationMode::runStateMachine()
         int16_t analogValue = map(analogRead(POT_PIN), 0, 1030, 0, 3);
         if (analogValue == 0)
         {
-            updateBlinkLED(CRGB(150, 0, 250)); // Purple for Reset
+            updateBlinkLED(CRGB(
+                150, 
+                0, 
+                250
+            )); // Purple for Reset
         }
         else if (analogValue == 1)
         {
-            updateBlinkLED(CRGB(225, 225, 225)); // Grey for Stage 1 (Tilt)
+            updateBlinkLED(CRGB(
+                225,
+                225,
+                225
+            )); // Grey for Stage 1 (Tilt)
         }
         else if (analogValue == 2)
         {
-            updateBlinkLED(CRGB(0, 255, 255)); // Cyan for Stage 2 (Yaw)
+            updateBlinkLED(CRGB(
+                0,
+                255,
+                255
+            )); // Cyan for Stage 2 (Yaw)
         }
         if (robot.currButton == 1)
         {
@@ -65,7 +81,11 @@ void CalibrationMode::runStateMachine()
     }
     break;
     case CALIBRATION_TILT:
-        setColor(CRGB(225, 225, 225));
+        setColor(CRGB(
+            225,
+            225,
+            225
+        ));
         robot.calibrating = false;
         if (robot.currButton == 1)
         {
@@ -73,7 +93,11 @@ void CalibrationMode::runStateMachine()
         }
         break;
     case CALIBRATION_YAW:
-        setColor(CRGB(0, 255, 255));
+        setColor(CRGB(
+            0,
+            255,
+            255
+        ));
         robot.calibrating = false;
         if (robot.currButton == 1)
         {
@@ -81,7 +105,11 @@ void CalibrationMode::runStateMachine()
         }
         break;
     case CALIBRATION_RESET:
-        setColor(CRGB(150, 0, 250));
+        setColor(CRGB(
+            150,
+            0,
+            250
+        ));
         if (robot.currButton == 1)
         {
             resetCalibration();
