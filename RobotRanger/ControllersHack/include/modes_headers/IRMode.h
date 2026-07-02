@@ -46,7 +46,7 @@ private:
 
     const uint16_t START_INCREMENT = 15;
     const uint16_t RAMP_INCREMENT = 10;
-    uint16_t currentIncrement = START_INCREMENT;
-    uint16_t currCommand = 0;
-    uint16_t lastCommand = 0;
+    int16_t currentIncrement = START_INCREMENT;
+    int16_t currCommand = 0;
+    int16_t lastCommand = 0;
 };
