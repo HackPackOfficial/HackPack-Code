@@ -3,7 +3,7 @@
 
 /*
  ************************************************************************************
- * Card Dealing Robot Stock Code
+ * Card Dealing Robot - Stealth Hack
  * 02.24.2025
  * Version: 2.4.5
  * Author: Crunchlabs LLC
