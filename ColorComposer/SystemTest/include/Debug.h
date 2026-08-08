@@ -2,10 +2,10 @@
  * This is a macro for easily enabling or disabling the Serial monitor print statements.
  *
  * You can enable serial print debugging by setting
- *    #define USE_SERIAL 1
+ *    #define USE_SERIAL
  *
- * Or, you can disable serial print debugging by setting
- *    #define USE_SERIAL 0
+ * Or, you can disable serial print debugging by not setting it
+ *    // #define USE_SERIAL
  *
  * In your main code, rather than using Serial.print() or Serial.println(), use their aliases defined below (e.g., SERIAL_PRINTLN()).
  *
@@ -26,18 +26,16 @@
 
 // #define USE_SERIAL
 
-#if USE_SERIAL
+#ifdef USE_SERIAL
+  #define SERIAL_BEGIN(x) Serial.begin(x)
   #define SERIAL_PRINT(x) Serial.print(x)
   #define SERIAL_PRINTLN(x) Serial.println(x)
-  #define SERIAL_BEGIN(baud) Serial.begin(baud)
   #define SERIAL_TAB Serial.print("\t")
-  #define SERIAL_TABS(x) for (uint8_t i = 0; i < x; i++) {Serial.print("t");}
-  #define SERIAL_BEGIN(x) Serial.begin(x)
+  #define SERIAL_TABS(x) for (uint8_t i = 0; i < x; i++) {Serial.print("\t");}
 #else
+  #define SERIAL_BEGIN(x)       do {} while (0)
   #define SERIAL_PRINT(x)       do {} while (0)
   #define SERIAL_PRINTLN(x)     do {} while (0)
-  #define SERIAL_BEGIN(baud)    do {} while (0)
   #define SERIAL_TAB            do {} while (0)
   #define SERIAL_TABS(x)        do {} while (0)
-  #define SERIAL_BEGIN(x)       do {} while (0)
 #endif
