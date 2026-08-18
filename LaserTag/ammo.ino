@@ -349,7 +349,9 @@ void UpdateLights(unsigned long currentMillis) {
       strip.setPixelColor(i, strip.Color(0, 0, 0));
     }
   }
+  if (IrReceiver.isIdle()) {
     strip.show();
+  }
 }
 
 void UpdateAmmo(bool dir, unsigned long currentMillis) {

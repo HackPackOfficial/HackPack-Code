@@ -307,7 +307,9 @@ void UpdateLights(unsigned long currentMillis) {
       strip.setPixelColor(i, strip.Color(0, 0, 0));
     }
   }
-  strip.show();
+  if (IrReceiver.isIdle()) {
+    strip.show();
+  }
 }
 #pragma endregion UI_FUNTIONS
 
