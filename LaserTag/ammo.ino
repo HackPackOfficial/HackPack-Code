@@ -322,7 +322,7 @@ uint8_t Blue(uint32_t color)
 
 void UpdateLights(unsigned long currentMillis) {
   for (int i = 0; i < strip.numPixels(); i++) {
-    if (i < LED_COUNT){ //ammo) {
+    if (i < ammo) {
       uint8_t r;
       uint8_t g;
       uint8_t b;
@@ -349,7 +349,9 @@ void UpdateLights(unsigned long currentMillis) {
       strip.setPixelColor(i, strip.Color(0, 0, 0));
     }
   }
-  strip.show();
+  if (IrReceiver.isIdle()) {
+    strip.show();
+  }
 }
 
 void UpdateAmmo(bool dir, unsigned long currentMillis) {
