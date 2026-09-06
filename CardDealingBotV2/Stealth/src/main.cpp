@@ -27,16 +27,16 @@ Some handy toggles and values pulled up to the top for ease of access.
 #pragma region CONFIGURATION
 
 // HANDY TOGGLES AND VALUES
-bool useSerial = false;                                // Enables serial output for debugging. Set to false to disable serial output. Some statements need manual uncommenting for memory reasons.
-bool scrollInstructions = true;                        // Enables/disables the instructions that scrikk between the initial animation and the games selection menu.
-bool motorStartRoutine = true;                         // Enables/disables each of the motors going back and forth at boot. Useful for debugging, but can be turned off to save a little energy for deals.
-uint8_t riggedColor = 1;                               // Can be used to changed the color tag that marked cards are dealt towards. RED = 1; YELLOW = 2; BLUE = 3; GREEN = 4.
-uint16_t textSpeedInterval = 160;                      // How fast do you read?? Amount of time (in ms) between frames of scrolling text (Lower number = faster text scrolling).
-uint16_t textStartHoldTime = 800;                      // Amount of time (in ms) scrolling text should pause before advancing.
-uint16_t textEndHoldTime = 800;                        // Amount of time (in ms) that scrolling text should pause at the end of a scroll.
-const unsigned long timeUntilScreensaverStart = 55000; // When this amount of time expires (in milliseconds), the intro animation starts as a screensaver.
+bool useSerial = false;                                // Enables serial output for debugging. Set to false to disable serial output. Some statements need manual uncommenting for memory reasons. -- ///{"options":["true","false"]}
+bool scrollInstructions = true;                        // Enables/disables the instructions that scrikk between the initial animation and the games selection menu. -- ///{"options":["true","false"]}
+bool motorStartRoutine = true;                         // Enables/disables each of the motors going back and forth at boot. Useful for debugging, but can be turned off to save a little energy for deals. -- ///{"options":["true","false"]}
+uint8_t riggedColor = 1;                               // Can be used to changed the color tag that marked cards are dealt towards. RED = 1; YELLOW = 2; BLUE = 3; GREEN = 4. -- ///{"range":[1,4]}
+uint16_t textSpeedInterval = 160;                      // How fast do you read?? Amount of time (in ms) between frames of scrolling text (Lower number = faster text scrolling). -- ///{"min":0,"max":65535}
+uint16_t textStartHoldTime = 800;                      // Amount of time (in ms) scrolling text should pause before advancing. -- ///{"min":0,"max":65535}
+uint16_t textEndHoldTime = 800;                        // Amount of time (in ms) that scrolling text should pause at the end of a scroll. -- ///{"min":0,"max":65535}
+const unsigned long timeUntilScreensaverStart = 55000; // When this amount of time expires (in milliseconds), the intro animation starts as a screensaver. -- ///{"min":0,"max":4294967295}
 //const unsigned long markedLEDTimeout = 600;          // The Nano's onboard LED lights up when DEALR detects a marked card. This is the number of milliseconds it lights for.
-const unsigned long expressionDuration = 500;          // DEALR makes faces when it deals cards. This value determines the amount of time it makes the face for.
+const unsigned long expressionDuration = 500;          // DEALR makes faces when it deals cards. This value determines the amount of time it makes the face for. -- ///{"min":0,"max":4294967295}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
 EDITING DEALR'S DEALING FACES
@@ -45,12 +45,12 @@ face must be exactly four characters long, including spaces.
 */
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const char *EFFORT = "X  X"; // The face DEALR makes in unrigged games while dealing a card
+const char *EFFORT = "X  X"; // The face DEALR makes in unrigged games while dealing a card -- ///{"length":4}
 // const char *MONEY = "$  $";      // The face DEALR makes in rigged games while dealing a marked card
 // const char *LOOK_SMALL = "o  o"; // The face DEALR makes in unrigged games while dealing an unmarked card
-const char *LEFT = ">  >";     // The face DEALR makes when rotating clockwise
-const char *RIGHT = "<  <";    // The face DEALR makes when rotating counter-clockwise
-const char *LOOK_BIG = "O  O"; // The face DEALR makes right before dealing a card in a regular game
+const char *LEFT = ">  >";     // The face DEALR makes when rotating clockwise -- ///{"length":4}
+const char *RIGHT = "<  <";    // The face DEALR makes when rotating counter-clockwise -- ///{"length":4}
+const char *LOOK_BIG = "O  O"; // The face DEALR makes right before dealing a card in a regular game -- ///{"length":4}
 // const char *WILD = "@  @";       // The face DEALR makes right before dealing a marked card in a rigged game
 // const char *SNEAKY = "=  =";     // The face DEALR makes right before dealing an unmarked card in a rigged game
 
@@ -81,38 +81,38 @@ You can create new animations and call them in the script, but if you're just ge
 
 // Initial blinking animation
 const char *introFrames[] = {
-  "O  O",  // Frame 1
-  "-  -",  // Frame 2
-  "O  O",  // Frame 3
-  "-  -",  // Frame 4
-  "O  O"}; // Frame 5
+  "O  O",  // Frame 1 -- ///{"length":4}
+  "-  -",  // Frame 2 -- ///{"length":4}
+  "O  O",  // Frame 3 -- ///{"length":4}
+  "-  -",  // Frame 4 -- ///{"length":4}
+  "O  O"}; // Frame 5 -- ///{"length":4}
 const unsigned long introIntervals[] = {
-  1100 ,  // Interval 1
-  75   ,  // Interval 2
-  180  ,  // Interval 3
-  75   ,  // Interval 4
-  1100 }; // Interval 5
+  1100 ,  // Interval 1 -- ///{"min":0,"max":4294967295}
+  75   ,  // Interval 2 -- ///{"min":0,"max":4294967295}
+  180  ,  // Interval 3 -- ///{"min":0,"max":4294967295}
+  75   ,  // Interval 4 -- ///{"min":0,"max":4294967295}
+  1100 }; // Interval 5 -- ///{"min":0,"max":4294967295}
 const DisplayAnimation initialBlinking = {introFrames, introIntervals, ARRAY_SIZE(introFrames)};
 
 // Screensaver blinking animation
 const char *screensaveFrames[] = {
-  "O  O",  // Frame 1
-  "-  -",  // Frame 2
-  "O  O",  // Frame 3 
-  "-  -",  // Frame 4
-  "a  a",  // Frame 5
-  "_  _",  // Frame 6
-  "-  -",  // Frame 7
-  "_  _"}; // Frame 8
+  "O  O",  // Frame 1 -- ///{"length":4}
+  "-  -",  // Frame 2 -- ///{"length":4}
+  "O  O",  // Frame 3 -- ///{"length":4}
+  "-  -",  // Frame 4 -- ///{"length":4}
+  "a  a",  // Frame 5 -- ///{"length":4}
+  "_  _",  // Frame 6 -- ///{"length":4}
+  "-  -",  // Frame 7 -- ///{"length":4}
+  "_  _"}; // Frame 8 -- ///{"length":4}
 const unsigned long screensaveIntervals[] = {
-  2000 ,  // Interval 1
-  75   ,  // Interval 2
-  3000 ,  // Interval 3
-  75   ,  // Interval 4
-  3000 ,  // Interval 5
-  3000 ,  // Interval 6
-  1500 ,  // Interval 7
-  4000 }; // Interval 8
+  2000 ,  // Interval 1 -- ///{"min":0,"max":4294967295}
+  75   ,  // Interval 2 -- ///{"min":0,"max":4294967295}
+  3000 ,  // Interval 3 -- ///{"min":0,"max":4294967295}
+  75   ,  // Interval 4 -- ///{"min":0,"max":4294967295}
+  3000 ,  // Interval 5 -- ///{"min":0,"max":4294967295}
+  3000 ,  // Interval 6 -- ///{"min":0,"max":4294967295}
+  1500 ,  // Interval 7 -- ///{"min":0,"max":4294967295}
+  4000 }; // Interval 8 -- ///{"min":0,"max":4294967295}
 const DisplayAnimation screensaverBlinking = {screensaveFrames, screensaveIntervals, ARRAY_SIZE(screensaveFrames)};
 
 // Cheating blinking animation

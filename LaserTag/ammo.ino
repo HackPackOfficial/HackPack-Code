@@ -36,7 +36,7 @@
 #define _IR_TIMING_TEST_PIN 7
 
 #define LED_PIN     6
-#define LED_COUNT   6
+#define LED_COUNT   6 ///{"min":0,"max":20}
 
 #define RELOAD_PIN      8
 #define SERVO_PIN       9
@@ -68,23 +68,23 @@ Servo myservo;
 #pragma region GAME_PARAMETERS
 #define DEBOUNCE_DELAY 20
 
-#define SERVO_INITIAL_POS 150     // how agressively to undarken goggles 
-#define SERVO_READY_POS 120       // reduce aggresiveness near end of action
-#define SERVO_HIT_POS 50
+#define SERVO_INITIAL_POS 150     // how agressively to undarken goggles -- ///{"min":90,"max":180}
+#define SERVO_READY_POS 120       // reduce aggresiveness near end of action -- ///{"min":90,"max":180}
+#define SERVO_HIT_POS 50 ///{"min":0,"max":90}
 
-#define TRIGGER_COOLDOWN 500      // milliseconds  
-#define HIT_TIMEOUT 10000         // milliseconds
-#define RELOAD_TIME_EACH 1000     // milliseconds
+#define TRIGGER_COOLDOWN 500      // milliseconds -- ///{"min":0,"max":5000}
+#define HIT_TIMEOUT 10000         // milliseconds -- ///{"min":1000,"max":30000}
+#define RELOAD_TIME_EACH 1000     // milliseconds -- ///{"min":250,"max":5000}
 
-const bool infiniteAmmo = false;
+const bool infiniteAmmo = false; ///{"options":["true","false"]}
 const int maxAmmo = LED_COUNT;        
-const bool deathTakesAmmo = true;          
+const bool deathTakesAmmo = true; ///{"options":["true","false"]}
 
-int team = 1;     // default 
+int team = 1;     // default -- ///{"range":[1,3]}
 // color wheel colors for teams 0 -255
-int color1 = 85;   // green
-int color2 = 170;  // blue
-int color3 = 43;   // yellow
+int color1 = 85;   // green -- ///{"min":0,"max":255}
+int color2 = 170;  // blue -- ///{"min":0,"max":255}
+int color3 = 43;   // yellow -- ///{"min":0,"max":255}
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>> GAME VARIABLES <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 

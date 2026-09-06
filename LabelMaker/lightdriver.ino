@@ -49,8 +49,8 @@
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // Set the LCD address to 0x27 for a 16x2 display
 
 ezButton button1(14); //joystick button handler
-#define INIT_MSG "Initializing..." // Text to display on startup
-#define MODE_NAME "  LIGHT DRIVER  " //these are variables for the text which is displayed in different menus. 
+#define INIT_MSG "Initializing..." // Text to display on startup -- ///{}
+#define MODE_NAME "  LIGHT DRIVER  " //these are variables for the text which is displayed in different menus. -- ///{}
 #define SCORE "  SCORE:        " //try changing these, or making new ones and adding conditions for when they are used
 //NOTE: These strings need to be 16 characters long to fit on the LCD screen
 

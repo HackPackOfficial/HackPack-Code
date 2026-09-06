@@ -49,16 +49,16 @@
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // Set the LCD address to 0x27 for a 16x2 display
 
 ezButton button1(14); //joystick button handler
-#define INIT_MSG "Initializing..." // Text to display on startup
-#define MODE_NAME "   LABELMAKER   " //these are variables for the text which is displayed in different menus. 
-#define PRINT_CONF "  PRINT LABEL?  " //try changing these, or making new ones and adding conditions for when they are used
-#define PRINTING "    PRINTING    " // NOTE: this text must be 16 characters or LESS in order to fit on the screen correctly
+#define INIT_MSG "Initializing..." // Text to display on startup -- ///{}
+#define MODE_NAME "   LABELMAKER   " //these are variables for the text which is displayed in different menus. -- ///{"col":23}
+#define PRINT_CONF "  PRINT LABEL?  " //try changing these, or making new ones and adding conditions for when they are used -- ///{}
+#define PRINTING "    PRINTING    " // NOTE: this text must be 16 characters or LESS in order to fit on the screen correctly -- ///{"col":23}
 #define MENU_CLEAR ":                " //this one clears the menu for editing
 
 
 //text variables
-int x_scale = 230;//these are multiplied against the stored coordinate (between 0 and 4) to get the actual number of steps moved
-int y_scale = 230;//for example, if this is 230(default), then 230(scale) x 4(max coordinate) = 920 (motor steps)
+int x_scale = 230;//these are multiplied against the stored coordinate (between 0 and 4) to get the actual number of steps moved -- ///{"min":100,"max":500}
+int y_scale = 230;//for example, if this is 230(default), then 230(scale) x 4(max coordinate) = 920 (motor steps) -- ///{"min":100,"max":250}
 int scale = x_scale;
 int space = x_scale * 5; //space size between letters (as steps) based on X scale in order to match letter width
 //multiplied by 5 because the scale variables are multiplied against coordinates later, while space is just fed in directly, so it needs to be scaled up by 5 to match

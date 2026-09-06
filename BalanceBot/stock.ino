@@ -83,10 +83,10 @@
 //////////////////////////////////////////////////
 #pragma region LIBRARIES AND CONFIG
 // USEFUL TOGGLES
-bool useDynamicSetpoint = true;      //enables dynamic pid_setpoint, which adjusts the pid_setpoint based on motor output, set false to use raw PID (which tends to drift off as gearbox of these motors has significant backlash)
-bool useCalibration = false; //sets whether the MPU calibrates offsets on start up or not. This produces a delay on startup where you must hold the bot relatively upright
+bool useDynamicSetpoint = true;      //enables dynamic pid_setpoint, which adjusts the pid_setpoint based on motor output, set false to use raw PID (which tends to drift off as gearbox of these motors has significant backlash) -- ///{"options":["true","false"]}
+bool useCalibration = false; //sets whether the MPU calibrates offsets on start up or not. This produces a delay on startup where you must hold the bot relatively upright -- ///{"options":["true","false"]}
 // you can also run a single calibration and set offset values using the IMUzero sketch.
-bool useSerial = false; //enables serial output for debugging, set to false to disable serial output
+bool useSerial = false; //enables serial output for debugging, set to false to disable serial output -- ///{"options":["true","false"]}
 // NOTE: Serial plotting can be very helpful for tuning PID, but it can also slow down the bot's response time, so it's best to disable it when not tuning
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,9 +147,9 @@ int bal_count = 0;  // How many loops spent in current balance state, one way to
 #pragma region PID config
 // PID values control the response of the motors based on the pid_setpoint angle and current pitch angle to try to keep the pitch near the pid_setpoint
 #include <PID_v1_bc.h>
-double kP = 24.2; // the Proportional term of PID - directly proportional to the error (setpoint - pitch) between setpoint angle and input
-double kI = 225; // the Integral term of PID - integrates the error over time to minimize accumulating error (if P is regularly falling short)
-double kD = 0.76; // the Derivative term of PID - takes the derivative (or instantaneous rate of change) in order to soften the PI response as it approaches the input value
+double kP = 24.2; // the Proportional term of PID - directly proportional to the error (setpoint - pitch) between setpoint angle and input -- ///{"min":0,"max":100}
+double kI = 225; // the Integral term of PID - integrates the error over time to minimize accumulating error (if P is regularly falling short) -- ///{"min":0,"max":1000}
+double kD = 0.76; // the Derivative term of PID - takes the derivative (or instantaneous rate of change) in order to soften the PI response as it approaches the input value -- ///{"min":0,"max":25}
 
 // Here are some extra PID settings to try out. Notice how the higher P and I values tend to jitter much more, because they are much more responsive to changes
 // Higher PI values will work better with useDynamicSetpoint set to false, as the pid_setpoint gain is heavily influenced by the strength of P and I
@@ -184,7 +184,7 @@ double kD = 0.76; // the Derivative term of PID - takes the derivative (or insta
 // undertuned setpoint_gain will make the performance closer to raw PID, which means the bot is more likely to drift and is not as responsive to being pushed.
 // Try disabling useDynamicSetpoint and messing with different PID settings to see the difference.
 
-float init_angle = -0.5;         // this is your "trim" to adjust the pid_setpoint (balanced) angle in case your bot is favoring forward over backward movement or vice versa. 
+float init_angle = -0.5;         // this is your "trim" to adjust the pid_setpoint (balanced) angle in case your bot is favoring forward over backward movement or vice versa. -- ///{"min":-10,"max":10}
 //Nominally init should be around 0 degrees, but may vary based on the mounting of the MPU sensor.
 //negative values correspond to forward bias, positive values correspond to backward bias
 float reset_angle = init_angle;  // our reset_angle is averaged over time in case the init_angle isn't accurate, making the system more responsive to changes in weight distribution
@@ -193,9 +193,9 @@ double pid_input = 0;                  //the "input" of PID, which would be pitc
 double pid_output = 0;                 //the "output" of PID, which would be motor speed between -255 and 255 to capture any speed in either direction
 PID pid(&pid_input, &pid_output, &pid_setpoint, kP, kI, kD, DIRECT);  // PID setup
 
-double setpoint_gain = 0.000026;       //value used to dynamically adjust the pid_setpoint angle based on output, causing the bot to lean against a push, also helps with braking
+double setpoint_gain = 0.000026;       //value used to dynamically adjust the pid_setpoint angle based on output, causing the bot to lean against a push, also helps with braking -- ///{"min":0.00001,"max":0.0001}
 //^^ try values between 0.00001 and 0.00005 and see how they affect the behavior. The higher setpoint_gain will be more responsive to being pushed, but may make driving more unpredictable
-double reset_gain = 0.000005;          //value used to dynamically adjust the reset (what we snap pid_setpoint back to in case of changing states) at a much slower rate than setpoint_gain
+double reset_gain = 0.000005;          //value used to dynamically adjust the reset (what we snap pid_setpoint back to in case of changing states) at a much slower rate than setpoint_gain -- ///{"min":0.000001,"max":0.000005}
 //^^ over a long time this should average towards the actual true balanced point of the robot. Smaller values will make this take much longer, however if the init_angle is properly set it shouldn't be an issue
 //^^ try values between 0.000001 and 0.000005
 
@@ -339,7 +339,7 @@ void handle_sensors() {
     if (inRange){
       led_state = BLUSH;
     }else{
-      led_state = RAINBOW;
+      led_state = RAINBOW; ///{"options":["RAINBOW","ROLL"]}
     }
     updateLEDs();
   }

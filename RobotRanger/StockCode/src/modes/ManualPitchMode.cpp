@@ -10,9 +10,9 @@
 void ManualPitchMode::enter()
 {
     setColor(CRGB(
-        128,
-        0,
-        128
+        128, ///{"min":0,"max":255}
+        0, ///{"min":0,"max":255}
+        128 ///{"min":0,"max":255}
     )); // Purple for Pitch
     initialPotValue = analogRead(POT_PIN);
     lastPitchAngle = startPWM; // Start position

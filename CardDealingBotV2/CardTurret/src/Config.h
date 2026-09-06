@@ -4,23 +4,23 @@
 #define GameConfig
 
 // HANDY TOGGLES AND VALUES
-bool useSerial = false;                               // Enables serial output for debugging. Set to false to disable serial output. Many statements need manual uncommenting for memory reasons.
-uint16_t textSpeedInterval = 200;                      // How fast do you read?? Amount of time (in ms) between frames of scrolling text (Lower number = faster text scrolling).
-uint16_t textStartHoldTime = 800;                      // Amount of time (in ms) scrolling text should pause before advancing.
-uint16_t textEndHoldTime = 800;                        // Amount of time (in ms) that scrolling text should pause at the end of a scroll.
-const unsigned long throwExpiration = 5000;            // If, when trying to deal a card, we take longer than this amount of time, throw an error.
-const unsigned long expressionDuration = 500;          // DEALR makes faces when it deals cards. This value determines the amount of time it makes the face for.
-const unsigned long errorTimeout = 6000;               // For rotations where we should have found a tag, but didn't, we throw an error after this amount of time.
-const unsigned long reverseFeedTime = 400;             // Amount of time to reverse the feed servo after a deal (successful or unsuccessful).
-const unsigned long flipDisplayDuration = 800;         // How long to display "FLIP" on the screen in milliseconds.
+bool useSerial = false;                               // Enables serial output for debugging. Set to false to disable serial output. Many statements need manual uncommenting for memory reasons. -- ///{"options":["true","false"]}
+uint16_t textSpeedInterval = 200;                      // How fast do you read?? Amount of time (in ms) between frames of scrolling text (Lower number = faster text scrolling). -- ///{"min":0,"max":65535}
+uint16_t textStartHoldTime = 800;                      // Amount of time (in ms) scrolling text should pause before advancing. -- ///{"min":0,"max":65535}
+uint16_t textEndHoldTime = 800;                        // Amount of time (in ms) that scrolling text should pause at the end of a scroll. -- ///{"min":0,"max":65535}
+const unsigned long throwExpiration = 5000;            // If, when trying to deal a card, we take longer than this amount of time, throw an error. -- ///{"min":0,"max":4294967295}
+const unsigned long expressionDuration = 500;          // DEALR makes faces when it deals cards. This value determines the amount of time it makes the face for. -- ///{"min":0,"max":4294967295}
+const unsigned long errorTimeout = 6000;               // For rotations where we should have found a tag, but didn't, we throw an error after this amount of time. -- ///{"min":0,"max":4294967295}
+const unsigned long reverseFeedTime = 400;             // Amount of time to reverse the feed servo after a deal (successful or unsuccessful). -- ///{"min":0,"max":4294967295}
+const unsigned long flipDisplayDuration = 800;         // How long to display "FLIP" on the screen in milliseconds. -- ///{"min":0,"max":4294967295}
 
 // STARTING CARDS PER PLAYER
-const uint8_t goFishStartingCards = 5;
-const uint8_t twentyOneStartingCards = 2;
-const uint8_t crazyEightsStartingCards = 5;
-const uint8_t warStartingCards = 26; // 52 cards / 2 players
-const uint8_t heartsStartingCards = 13;
-const uint8_t rummyStartingCards = 7;
+const uint8_t goFishStartingCards = 5; ///{"min":0,"max":255}
+const uint8_t twentyOneStartingCards = 2; ///{"min":0,"max":255}
+const uint8_t crazyEightsStartingCards = 5; ///{"min":0,"max":255}
+const uint8_t warStartingCards = 26; // 52 cards / 2 players -- ///{"min":0,"max":255}
+const uint8_t heartsStartingCards = 13; ///{"min":0,"max":255}
+const uint8_t rummyStartingCards = 7; ///{"min":0,"max":255}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -30,10 +30,10 @@ face must be exactly four characters long, including spaces.
 */
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const char EFFORT[] PROGMEM = "X  X";
-const char LEFT[] PROGMEM = ">  >";
-const char RIGHT[] PROGMEM = "<  <";
-const char LOOK_BIG[] PROGMEM = "O  O";
+const char EFFORT[] PROGMEM = "X  X"; ///{"length":4}
+const char LEFT[] PROGMEM = ">  >"; ///{"length":4}
+const char RIGHT[] PROGMEM = "<  <"; ///{"length":4}
+const char LOOK_BIG[] PROGMEM = "O  O"; ///{"length":4}
 
 struct DisplayAnimation
 {
@@ -62,14 +62,14 @@ You can create new animations and call them in the script, but if you're just ge
 
 // Initial blinking animation
 const char introFrames[][5] PROGMEM = {
-    "O  O", // Frame 1
-    "-  -", // Frame 2
-    "O  O"  // Frame 3
+    "O  O", // Frame 1 -- ///{"length":4}
+    "-  -", // Frame 2 -- ///{"length":4}
+    "O  O"  // Frame 3 -- ///{"length":4}
 };
 const unsigned long introIntervals[] PROGMEM = {
-    1100, // Interval 1
-    75,   // Interval 2
-    1100  // Interval 3
+    1100, // Interval 1 -- ///{"min":0,"max":4294967295}
+    75,   // Interval 2 -- ///{"min":0,"max":4294967295}
+    1100  // Interval 3 -- ///{"min":0,"max":4294967295}
 };
 const DisplayAnimation initialBlinking = {introFrames, introIntervals, ARRAY_SIZE(introFrames)};
 

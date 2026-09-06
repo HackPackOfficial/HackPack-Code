@@ -50,7 +50,7 @@
 #define SERVO_PIN 13
 #define SERVO_MIN_PULSE 650  // Minimum pulse width in microseconds
 #define SERVO_MAX_PULSE 2400 // Maximum pulse width in microseconds
-#define DISPENSE_DISTANCE 9000 //Value combinedMotorSpeed needs to reach to drop a domino. Decreasing this puts dominoes closer together.
+#define DISPENSE_DISTANCE 9000 //Value combinedMotorSpeed needs to reach to drop a domino. Decreasing this puts dominoes closer together. -- ///{"range":[5000,15000],"step":1000}
 #define PULSE_INTERVAL 20000 // Interval between pulses in milliseconds
 #define IR_Input 3
 

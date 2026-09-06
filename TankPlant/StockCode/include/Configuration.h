@@ -17,7 +17,7 @@
  * 
  * In your main code, rather than using Serial.print() or Serial.println(), use their aliases defined below (e.g., SERIAL_PRINTLN()):
  *  */ 
-#define USE_SERIAL 1
+#define USE_SERIAL 1 ///{"range":[0,1]}
 
 #if USE_SERIAL
   #define SERIAL_PRINT(x)     Serial.print(x)
@@ -46,8 +46,8 @@
 
 // If you find that one or both of the motors that drive the tank treads are running in the opposite direction that they should,
 // you can fix that here. To reverse one of the motors, change the value after the appropriate define to "true" without quotes.
-#define REVERSE_RIGHT_MOTOR false
-#define REVERSE_LEFT_MOTOR false
+#define REVERSE_RIGHT_MOTOR false ///{"options":["false","true"]}
+#define REVERSE_LEFT_MOTOR false ///{"options":["false","true"]}
 
 
 /**
@@ -58,11 +58,11 @@
  * Adjust the value of this constant to change how responsive the head is to differences in light levels between the two sensors.
  * Also, you can make this value negative to make the robot turn its head away from light!
  */
-constexpr float HEAD_SERVO_KP = 1.0;
+constexpr float HEAD_SERVO_KP = 1.0; ///{"min":-100,"max":100}
 
 
 // Maximum angular speed that the head servo will be allowed to spin in degrees per second
-constexpr float MAX_HEAD_SERVO_SPEED = 90.0; 
+constexpr float MAX_HEAD_SERVO_SPEED = 90.0; ///{"min":0,"max":180}
 
 
 /**
@@ -75,35 +75,35 @@ constexpr float MAX_HEAD_SERVO_SPEED = 90.0;
  * The best way to fix this is mechanically. Turn the robot on and then back off when the servo moves to center position. 
  * Then remove the gear from the shaft of the servo and rotate it slightly to occupy a new angle on the servo shaft. 
  */
-constexpr int8_t SERVO_TRIM = 0; 
+constexpr int8_t SERVO_TRIM = 0; ///{"min":-20,"max":20}
 
 
 // light sensor calibration related values
-constexpr uint16_t LIGHT_CAL_SPIN_TIME = 9000;  // spin in circle for 9 seconds during calibration mode
-constexpr uint8_t LIGHT_CAL_SPIN_SPEED = 140;   // spin at speed of 140 during calibration mode
+constexpr uint16_t LIGHT_CAL_SPIN_TIME = 9000;  // spin in circle for 9 seconds during calibration mode -- ///{"min":0,"max":9999}
+constexpr uint8_t LIGHT_CAL_SPIN_SPEED = 140;   // spin at speed of 140 during calibration mode -- ///{"min":0,"max":255}
 
 
 // constants for changing when the robot notices that it's spinning in circles and parks.
-constexpr uint16_t MIN_PARK_TIME = 10;
-constexpr uint16_t MAX_PARK_TIME = 20; // minimum and maximum park times in seconds. defaults to 10-20 so you can see all behavior
-constexpr uint8_t PARKING_THRESHOLD_ANGLE = 65;            // heading angle used as threshold in the spinningInCircles() function
-constexpr uint8_t MOISTURE_SAMPLING_PERIOD = 10;           // sample the moisture every 10 seconds. also prints state to LED matrix at this interval in PARK
-constexpr uint16_t HEADING_SAMPLE_WINDOW = 8000;           // track the heading over a window of 8 seconds
-constexpr uint8_t HEADING_FILTER_SIZE = 80;                // how many samples of the heading will be averaged
+constexpr uint16_t MIN_PARK_TIME = 10; ///{"min":0,"max":65535}
+constexpr uint16_t MAX_PARK_TIME = 20; // minimum and maximum park times in seconds. defaults to 10-20 so you can see all behavior -- ///{"min":0,"max":65535}
+constexpr uint8_t PARKING_THRESHOLD_ANGLE = 65;            // heading angle used as threshold in the spinningInCircles() function -- ///{"min":20,"max":80}
+constexpr uint8_t MOISTURE_SAMPLING_PERIOD = 10;           // sample the moisture every 10 seconds. also prints state to LED matrix at this interval in PARK -- ///{"min":1,"max":60}
+constexpr uint16_t HEADING_SAMPLE_WINDOW = 8000;           // track the heading over a window of 8 seconds -- ///{"min":1000,"max":20000}
+constexpr uint8_t HEADING_FILTER_SIZE = 80;                // how many samples of the heading will be averaged -- ///{"min":10,"max":100}
 
 
 // tank movement values
-constexpr uint16_t TANK_RETREAT_INTERVAL = 1000;         // Time in milliseconds to reverse away from object
-constexpr uint16_t TANK_RETREAT_ROTATE_INTERVAL = 1000;  // Time in milliseconds to rotate away from object after reverse
-constexpr uint16_t POSITION_RANDOMIZE_SPIN_MIN = 4000;   // Minimum amount of time robot will spin in place when randomizing its position
-constexpr uint16_t POSITION_RANDOMIZE_SPIN_MAX = 9000;   // Maximum amount of time robot will spin in place when randomizing its position
-constexpr uint16_t POSITION_RANDOMIZE_DRIVE_MIN = 10000; // Minimum amount of time robot will drive forward after spinning during position randomization sequence
-constexpr uint16_t POSITION_RANDOMIZE_DRIVE_MAX = 20000; // Maximum amount of time robot will drive forward after spinning during position randomization sequence
+constexpr uint16_t TANK_RETREAT_INTERVAL = 1000;         // Time in milliseconds to reverse away from object -- ///{"min":1000,"max":10000}
+constexpr uint16_t TANK_RETREAT_ROTATE_INTERVAL = 1000;  // Time in milliseconds to rotate away from object after reverse -- ///{"min":1000,"max":10000}
+constexpr uint16_t POSITION_RANDOMIZE_SPIN_MIN = 4000;   // Minimum amount of time robot will spin in place when randomizing its position -- ///{"min":1000,"max":20000}
+constexpr uint16_t POSITION_RANDOMIZE_SPIN_MAX = 9000;   // Maximum amount of time robot will spin in place when randomizing its position -- ///{"min":1000,"max":20000}
+constexpr uint16_t POSITION_RANDOMIZE_DRIVE_MIN = 10000; // Minimum amount of time robot will drive forward after spinning during position randomization sequence -- ///{"min":1000,"max":20000}
+constexpr uint16_t POSITION_RANDOMIZE_DRIVE_MAX = 20000; // Maximum amount of time robot will drive forward after spinning during position randomization sequence -- ///{"min":1000,"max":20000}
 
 
 // corner trap detection variables
-constexpr uint16_t CORNER_TRAP_TIME_WINDOW = 45000;      // Time window during which bumper presses count toward the corner trap detection threshold
-constexpr uint8_t CORNER_TRAP_THRESHOLD = 4;             // How many bumper presses within the above time window indicate a corner trap
+constexpr uint16_t CORNER_TRAP_TIME_WINDOW = 45000;      // Time window during which bumper presses count toward the corner trap detection threshold -- ///{"min":10000,"max":90000}
+constexpr uint8_t CORNER_TRAP_THRESHOLD = 4;             // How many bumper presses within the above time window indicate a corner trap -- ///{"range":[2,6]}
 
 
 /**
@@ -119,27 +119,27 @@ constexpr uint8_t CORNER_TRAP_THRESHOLD = 4;             // How many bumper pres
  */
 constexpr uint8_t SPEED_MAP_INFLECTION_POINTS = 5;
 inline int16_t HEADINGS_IN_MAP[SPEED_MAP_INFLECTION_POINTS] = {
-  -90, 
-  -45, 
-  0,
-  45, 
-  90
+  -90, ///{"min":-90,"max":90}
+  -45, ///{"min":-90,"max":90}
+  0, ///{"min":-90,"max":90}
+  45, ///{"min":-90,"max":90}
+  90 ///{"min":-90,"max":90}
 };    // independent variable for the piecewise functions
 
 inline int16_t LEFT_SPEED_MAP[SPEED_MAP_INFLECTION_POINTS] = {
-  -255, 
-  0, 
-  150, 
-  192, 
-  255
+  -255, ///{"min":-255,"max":255}
+  0, ///{"min":-255,"max":255}
+  150, ///{"min":-255,"max":255}
+  192, ///{"min":-255,"max":255}
+  255 ///{"min":-255,"max":255}
 };  // dependent variable for piecewise linear function for left motor (ex: when heading is 45, lMotor speed is 192)
 
 inline int16_t RIGHT_SPEED_MAP[SPEED_MAP_INFLECTION_POINTS] = {
-  255,
-  192,
-  150,
-  0,
-  -255
+  255, ///{"min":-255,"max":255}
+  192, ///{"min":-255,"max":255}
+  150, ///{"min":-255,"max":255}
+  0, ///{"min":-255,"max":255}
+  -255 ///{"min":-255,"max":255}
 }; // dependent variable for piecewise linear function for right motor speed (ex: when heading is 45, rMotor speed is 0)
 
 /**
@@ -147,10 +147,10 @@ inline int16_t RIGHT_SPEED_MAP[SPEED_MAP_INFLECTION_POINTS] = {
  * are upper bounds for the different moisture levels. See [[Footnotes.md#Footnote 7: Notes on calibrating the moisture sensor readings]]
 */
 // water threshold values
-constexpr uint16_t MOISTURE_OFFSET = 754;       // get the reading on the moisture sensor in open air and use that here
-constexpr uint8_t PARCHED_UPPER_THRESHOLD = 40; // the upper bound for considering the plant to be parched
-constexpr uint8_t THIRSTY_UPPER_THRESHOLD = 70; // the upper bound for considering the plant to be thirsty.
-constexpr uint8_t SATISFIED_UPPER_THRESHOLD = 130;  // beyond this the plant will be considered to be drowning, with water starting to fill the pot rather than be absorbed by the LECA.
+constexpr uint16_t MOISTURE_OFFSET = 754;       // get the reading on the moisture sensor in open air and use that here -- ///{"min":0,"max":1023}
+constexpr uint8_t PARCHED_UPPER_THRESHOLD = 40; // the upper bound for considering the plant to be parched -- ///{"min":0,"max":1023}
+constexpr uint8_t THIRSTY_UPPER_THRESHOLD = 70; // the upper bound for considering the plant to be thirsty. -- ///{"min":0,"max":1023}
+constexpr uint8_t SATISFIED_UPPER_THRESHOLD = 130;  // beyond this the plant will be considered to be drowning, with water starting to fill the pot rather than be absorbed by the LECA. -- ///{"min":0,"max":1023}
 
 
 #endif // CONFIGURATION_H

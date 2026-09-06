@@ -38,8 +38,8 @@
 #define STBY              8                                 //motor driver
 #define OFFSET_A          1                                 //Switch to -1 if the motor is running backwards
 #define OFFSET_B          1                                 //Switch to -1 if the motor is running backwards
-#define LEFT_SENSOR_PIN   A1                                //Left line sensor pin
-#define RIGHT_SENSOR_PIN  A0                                //Right sensor pin
+#define LEFT_SENSOR_PIN   A1                                //Left line sensor pin -- ///{"options":["A1","A0"]}
+#define RIGHT_SENSOR_PIN  A0                                //Right sensor pin -- ///{"options":["A0","A1"]}
 #define BUTTON_PIN        12                                //The pin the switch for detecting domino outage is connected to.
 
 Motor motor1 = Motor(AIN1, AIN2, PWMA, OFFSET_A, STBY);

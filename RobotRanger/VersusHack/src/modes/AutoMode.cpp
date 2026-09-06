@@ -14,9 +14,9 @@ void AutoMode::enter()
   if (!robot.calibrating)
   {
     setColor(CRGB(
-      0,
-      255,
-      0
+      0, ///{"min":0,"max":255}
+      255, ///{"min":0,"max":255}
+      0 ///{"min":0,"max":255}
     )); // Green
   }
   else

@@ -27,11 +27,11 @@ Some handy toggles and values pulled up to the top for ease of access.
 #pragma region CONFIGURATION
 
 // HANDY TOGGLES AND VALUES
-bool useSerial = false;                       // Enables serial output for debugging. Set to false to disable serial output. Some statements need manual uncommenting for memory reasons.
-uint16_t textSpeedInterval = 160;             // How fast do you read?? Amount of time (in ms) between frames of scrolling text (Lower number = faster text scrolling).
-uint16_t textStartHoldTime = 800;             // Amount of time (in ms) scrolling text should pause before advancing.
-uint16_t textEndHoldTime = 800;               // Amount of time (in ms) that scrolling text should pause at the end of a scroll.
-const unsigned long expressionDuration = 500; // DEALR makes faces when it deals cards. This value determines the amount of time it makes the face for.
+bool useSerial = false;                       // Enables serial output for debugging. Set to false to disable serial output. Some statements need manual uncommenting for memory reasons. -- ///{"options":["true","false"]}
+uint16_t textSpeedInterval = 160;             // How fast do you read?? Amount of time (in ms) between frames of scrolling text (Lower number = faster text scrolling). -- ///{"min":20,"max":999}
+uint16_t textStartHoldTime = 800;             // Amount of time (in ms) scrolling text should pause before advancing. -- ///{"min":0,"max":9999}
+uint16_t textEndHoldTime = 800;               // Amount of time (in ms) that scrolling text should pause at the end of a scroll. -- ///{"min":0,"max":9999}
+const unsigned long expressionDuration = 500; // DEALR makes faces when it deals cards. This value determines the amount of time it makes the face for. -- ///{"min":0,"max":9999}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
 EDITING DEALR'S DEALING FACES
@@ -39,10 +39,10 @@ While dealing, your Card Dealing Robot can make all kinds of faces. You can modi
 face must be exactly four characters long, including spaces.
 */
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const char *EFFORT = "X  X";   // The face DEALR makes in unrigged games while dealing a card
-const char *LEFT = ">  >";     // The face DEALR makes when it looks left
-const char *RIGHT = "<  <";    // The face DEALR makes when it looks right
-const char *LOOK_BIG = "O  O"; // The face DEALR makes right before dealing a card in a regular game
+const char *EFFORT = "X  X";   // The face DEALR makes in unrigged games while dealing a card -- ///{"length":4}
+const char *LEFT = ">  >";     // The face DEALR makes when it looks left -- ///{"length":4}
+const char *RIGHT = "<  <";    // The face DEALR makes when it looks right -- ///{"length":4}
+const char *LOOK_BIG = "O  O"; // The face DEALR makes right before dealing a card in a regular game -- ///{"length":4}
 
 struct DisplayAnimation // This little block has to come before the animation definitions, which let you change the faces DEALR makes.
 {
@@ -71,13 +71,13 @@ You can create new animations and call them in the script, but if you're just ge
 
 // Initial blinking animation
 const char *introFrames[] = {
-"O  O", 
-"-  -", 
-"O  O"};
+"O  O", ///{"length":4}
+"-  -", ///{"length":4}
+"O  O"}; ///{"length":4}
 const unsigned long introIntervals[] = {
-1100 , 
-75   ,
-1100 };
+1100 , ///{"min":0,"max":99999}
+75   , ///{"min":0,"max":99999}
+1100 }; ///{"min":0,"max":99999}
 const DisplayAnimation initialBlinking = {introFrames, introIntervals, ARRAY_SIZE(introFrames)};
 #pragma endregion CONFIGURATION
 #pragma region LICENSE
@@ -258,21 +258,21 @@ Fixed values such as motor speeds, timeouts, and default thresholds.
 // GAMES INCLUDED
 const uint8_t numGames = 6;            // Number of *index positions* for pre-programmed games (meaning "number of games" - 1). If you add a game, increment this number.
 const char gamesMenu[][16] PROGMEM = { // "16" defines the max number of characters you can use in these game titles.
-    "1-GO FISH",
-    "2-21",
-    "3-CRAZY EIGHTS",
-    "4-WAR",
-    "5-HEARTS",
-    "6-RUMMY",
-    "*7-TOOLS"};
+    "1-GO FISH", ///{"maxLength":15}
+    "2-21", ///{"maxLength":15}
+    "3-CRAZY EIGHTS", ///{"maxLength":15}
+    "4-WAR", ///{"maxLength":15}
+    "5-HEARTS", ///{"maxLength":15}
+    "6-RUMMY", ///{"maxLength":15}
+    "*7-TOOLS"}; ///{"maxLength":15}
 
 // TOOL MENUS INCLUDED
 const uint8_t numToolMenus = 4;        // Number of *index positions* for pre-programmed tuning routines (so "number of tool menus" - 1). If you add or subtract one, change this number.
 const char toolsMenu[][16] PROGMEM = { // "26" defines the max number of characters you can use in these menu titles.
-    "*1-DEAL CARD",                    // Deals a single card (useful for debugging card dealing)
-    "*2-SHUFFLE DECK",                 // Deals cards alternately into two piles, which can be stacked or further shuffled.
-    "*4-COLOR TUNER",                  // Place tags under sensor to "reset" color values for each tag
-    "*6-RESET COLORS"};                // Resets color and UV values to factory defaults
+    "*1-DEAL CARD",                    // Deals a single card (useful for debugging card dealing) -- ///{"maxLength":25}
+    "*2-SHUFFLE DECK",                 // Deals cards alternately into two piles, which can be stacked or further shuffled. -- ///{"maxLength":25}
+    "*4-COLOR TUNER",                  // Place tags under sensor to "reset" color values for each tag -- ///{"maxLength":25}
+    "*6-RESET COLORS"};                // Resets color and UV values to factory defaults -- ///{"maxLength":25}
 
 // STARTING STATES AND STATE UPDATE TAGS:
 dealState currentDealState = IDLE;             // Current state of the dealing interaction, starting with IDLE on boot.

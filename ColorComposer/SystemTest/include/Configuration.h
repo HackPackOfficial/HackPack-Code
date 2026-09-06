@@ -6,18 +6,18 @@
 // Easy way to toggle Serial print statements. See Debug.h to see how this works.
 // Set the following value to 1 to enable serial print debugging:
 
-#define USE_SERIAL 0          // options: 0 or 1 (0 default)
+#define USE_SERIAL 0          // options: 0 or 1 (0 default) -- ///{"range":[0,1]}
 #include <Debug.h>
 
 // set to 1 to change the PWM clock divisor for pins 3 and 11 (timer 2) - removes PWM noise due to LED dimming from audio
-#define USE_LED_PWM 1         // options: 1 or 0 (1 default) 
+#define USE_LED_PWM 1         // options: 1 or 0 (1 default) -- ///{"range":[1,0],"step":-1}
 
 // set to 1 to change the PWM clock divisor for pins 5 and 6 (timer 0) - removes motor noise from audio
-#define USE_FAST_PWM 1        // options: 1 or 0 (1 default)
+#define USE_FAST_PWM 1        // options: 1 or 0 (1 default) -- ///{"range":[1,0],"step":-1}
 
 // defines how often to update one of the sensors. The sensors get updated one at a time, so if this is left as the default
 // 15ms interval, each sensor will be updated every 45ms.
-constexpr uint8_t I2C_UPDATE_INTERVAL = 15; // time in milliseconds
+constexpr uint8_t I2C_UPDATE_INTERVAL = 15; // time in milliseconds -- ///{"min":1,"max":255}
 
 
 // **********************************************************************************
@@ -28,7 +28,7 @@ constexpr uint8_t I2C_UPDATE_INTERVAL = 15; // time in milliseconds
 // Higher values improve responsiveness to sensor input but reduce processing time available for audio synthesis. 
 // Audio glitching may indicate this value should be reduced.
 
-#define MOZZI_CONTROL_RATE 128    // options: 8, 16, 32, 64, 128, 256, 512 (default 128)
+#define MOZZI_CONTROL_RATE 128    // options: 8, 16, 32, 64, 128, 256, 512 (default 128) -- ///{"options":["8","16","32","64","128","256","512"]}
 
 // These are the wavetables that will be used for each oscillator voice. Mozzi offers a lot of them to try out!
 // To load a new wavetable that isn't included here already, you first have to include its header file, and then
@@ -73,9 +73,9 @@ constexpr uint8_t NUM_SCALES = 3;
 ScaleStorage scaleContainer = 
 {
   {
-    &scale_EbPentatonicMinor,            // options: any of the scales defined in MusicalScales.h (default scale_EbPentatonicMinor)
-    &scale_CLydian,                      // options: any of the scales defined in MusicalScales.h (default scale_CLydian)
-    &scale_CPentatonicMajor              // options: any of the scales defined in MusicalScales.h (default scale_CPentatonicMajor)
+    &scale_EbPentatonicMinor,            // options: any of the scales defined in MusicalScales.h (default scale_EbPentatonicMinor) -- ///{"options":["&scale_EbPentatonicMinor","&scale_CPentatonicMajor","&scale_CHarmonicMajor","&scale_CLydian","&scale_CDorian","&scale_CWholeTone","&scale_CDiminishedHalfWhole","&scale_CBlues","&scale_CMelodicMinor","&scale_CHirajoshi","&scale_CHungarianMinor","&scale_CPhrygianDominant","&scale_FMajPentatonic","&scale_BbMajPentatonic","&scale_AMinPentatonic","&scale_DHirajoshi","&scale_GEgyptian","&scale_EKumoi","&scale_DIwato"]}
+    &scale_CLydian,                      // options: any of the scales defined in MusicalScales.h (default scale_CLydian) -- ///{"options":["&scale_CLydian","&scale_CPentatonicMajor","&scale_CHarmonicMajor","&scale_EbPentatonicMinor","&scale_CDorian","&scale_CWholeTone","&scale_CDiminishedHalfWhole","&scale_CBlues","&scale_CMelodicMinor","&scale_CHirajoshi","&scale_CHungarianMinor","&scale_CPhrygianDominant","&scale_FMajPentatonic","&scale_BbMajPentatonic","&scale_AMinPentatonic","&scale_DHirajoshi","&scale_GEgyptian","&scale_EKumoi","&scale_DIwato"]}
+    &scale_CPentatonicMajor              // options: any of the scales defined in MusicalScales.h (default scale_CPentatonicMajor) -- ///{"options":["&scale_CPentatonicMajor","&scale_EbPentatonicMinor","&scale_CHarmonicMajor","&scale_CLydian","&scale_CDorian","&scale_CWholeTone","&scale_CDiminishedHalfWhole","&scale_CBlues","&scale_CMelodicMinor","&scale_CHirajoshi","&scale_CHungarianMinor","&scale_CPhrygianDominant","&scale_FMajPentatonic","&scale_BbMajPentatonic","&scale_AMinPentatonic","&scale_DHirajoshi","&scale_GEgyptian","&scale_EKumoi","&scale_DIwato"]}
   }, 
   0 // index of currently selected scale.
 };
@@ -86,24 +86,24 @@ ScaleStorage scaleContainer =
 // **********************************************************************************
 
 // Decrease this value to increase the probability of events that are partially randomly triggered
-constexpr uint8_t RANDOMNESS_THRESHOLD = 255;          // range 0 to 255 (255 default)
+constexpr uint8_t RANDOMNESS_THRESHOLD = 255;          // range 0 to 255 (255 default) -- ///{"min":0,"max":255}
 
 // these mappings determine which color sensor channels affect various parameters in ambienceGenerator()
-#define OCTAVE_SHIFTER_CHANNEL        mappedWhite      // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedWhite)
-#define BASE_INTERVAL_CHANNEL         mappedWhite      // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedWhite)     
+#define OCTAVE_SHIFTER_CHANNEL        mappedWhite      // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedWhite) -- ///{"options":["mappedWhite","mappedRed","mappedGreen","mappedBlue"]}
+#define BASE_INTERVAL_CHANNEL         mappedWhite      // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedWhite) -- ///{"options":["mappedWhite","mappedRed","mappedGreen","mappedBlue"]}
 
-#define OSC_0_ARP_TRIGGER_CHANNEL     mappedRed        // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedRed)
-#define OSC_0_NOTE_SELECTOR_CHANNEL   mappedGreen      // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedGreen)
-#define OSC_0_BUTTON_2_MODE_TIMER     mappedGreen      // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedGreen)
+#define OSC_0_ARP_TRIGGER_CHANNEL     mappedRed        // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedRed) -- ///{"options":["mappedRed","mappedWhite","mappedGreen","mappedBlue"]}
+#define OSC_0_NOTE_SELECTOR_CHANNEL   mappedGreen      // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedGreen) -- ///{"options":["mappedGreen","mappedWhite","mappedRed","mappedBlue"]}
+#define OSC_0_BUTTON_2_MODE_TIMER     mappedGreen      // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedGreen) -- ///{"options":["mappedGreen","mappedWhite","mappedRed","mappedBlue"]}
 
-#define OSC_1_ARP_TRIGGER_CHANNEL     mappedGreen      // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedGreen)
-#define OSC_1_NOTE_SELECTOR_CHANNEL   mappedBlue       // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedBlue)
-#define OSC_1_BUTTON_2_MODE_TIMER     mappedBlue       // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedBlue)
+#define OSC_1_ARP_TRIGGER_CHANNEL     mappedGreen      // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedGreen) -- ///{"options":["mappedGreen","mappedWhite","mappedRed","mappedBlue"]}
+#define OSC_1_NOTE_SELECTOR_CHANNEL   mappedBlue       // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedBlue) -- ///{"options":["mappedBlue","mappedWhite","mappedRed","mappedGreen"]}
+#define OSC_1_BUTTON_2_MODE_TIMER     mappedBlue       // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedBlue) -- ///{"options":["mappedBlue","mappedWhite","mappedRed","mappedGreen"]}
 
-#define OSC_2_ARP_TRIGGER_CHANNEL     mappedBlue       // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedBlue)
-#define OSC_2_NOTE_SELECTOR_CHANNEL   mappedRed        // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedRed)
-#define OSC_2_BUTTON_2_MODE_TIMER     mappedRed        // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedRed)
+#define OSC_2_ARP_TRIGGER_CHANNEL     mappedBlue       // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedBlue) -- ///{"options":["mappedBlue","mappedWhite","mappedRed","mappedGreen"]}
+#define OSC_2_NOTE_SELECTOR_CHANNEL   mappedRed        // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedRed) -- ///{"options":["mappedRed","mappedWhite","mappedGreen","mappedBlue"]}
+#define OSC_2_BUTTON_2_MODE_TIMER     mappedRed        // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedRed) -- ///{"options":["mappedRed","mappedWhite","mappedGreen","mappedBlue"]}
 
-#define GLOBAL_ARP_TRIGGER            mappedWhite      // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedWhite)
+#define GLOBAL_ARP_TRIGGER            mappedWhite      // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedWhite) -- ///{"options":["mappedWhite","mappedRed","mappedGreen","mappedBlue"]}
 
 #endif

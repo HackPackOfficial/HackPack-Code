@@ -13,9 +13,9 @@
 void ReflexMode::enter()
 {
   setColor(CRGB(
-    0,
-    0,
-    0
+    0, ///{"min":0,"max":255}
+    0, ///{"min":0,"max":255}
+    0 ///{"min":0,"max":255}
   )); // White
   SERIAL_PRINTLN("ReflexMode entered");
   resetPositions();
@@ -34,9 +34,9 @@ void ReflexMode::runStateMachine()
   {
   case STATE_GENERATION:
     setColor(CRGB(
-      0,
-      0,
-      0
+      0, ///{"min":0,"max":255}
+      0, ///{"min":0,"max":255}
+      0 ///{"min":0,"max":255}
     )); // White
     if (robot.currButton == 1)
     {

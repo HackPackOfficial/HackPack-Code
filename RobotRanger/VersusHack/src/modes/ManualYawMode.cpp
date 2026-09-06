@@ -10,9 +10,9 @@
 void ManualYawMode::enter()
 {
     setColor(CRGB(
-        0,
-        0,
-        255
+        0, ///{"min":0,"max":255}
+        0, ///{"min":0,"max":255}
+        255 ///{"min":0,"max":255}
     )); // Blue for Yaw
     initialPotValue = analogRead(POT_PIN);
     robot.yawServo.writeMicroseconds(lastYawAngle);

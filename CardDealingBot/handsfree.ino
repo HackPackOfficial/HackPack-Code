@@ -27,15 +27,15 @@ Some handy toggles and values pulled up to the top for ease of access.
 #pragma region CONFIGURATION
 
 // HANDY TOGGLES AND VALUES
-bool useSerial = false;                                // Enables serial output for debugging. Set to false to disable serial output. Some statements need manual uncommenting for memory reasons.
-bool scrollInstructions = true;                        // Enables/disables the instructions that scrikk between the initial animation and the games selection menu.
-bool motorStartRoutine = true;                         // Enables/disables each of the motors going back and forth at boot. Useful for debugging, but can be turned off to save a little energy for deals.
-uint8_t riggedColor = 1;                               // Can be used to changed the color tag that marked cards are dealt towards. RED = 1; YELLOW = 2; BLUE = 3; GREEN = 4.
-uint16_t textSpeedInterval = 160;                      // How fast do you read?? Amount of time (in ms) between frames of scrolling text (Lower number = faster text scrolling).
-uint16_t textStartHoldTime = 800;                      // Amount of time (in ms) scrolling text should pause before advancing.
-uint16_t textEndHoldTime = 800;                        // Amount of time (in ms) that scrolling text should pause at the end of a scroll.
-const unsigned long timeUntilScreensaverStart = 55000; // When this amount of time expires (in milliseconds), the intro animation starts as a screensaver.
-const unsigned long markedLEDTimeout = 600;            // The Nano's onboard LED lights up when DEALR detects a marked card. This is the number of milliseconds it lights for.
+bool useSerial = false;                                // Enables serial output for debugging. Set to false to disable serial output. Some statements need manual uncommenting for memory reasons. -- ///{"options":["true","false"]}
+bool scrollInstructions = true;                        // Enables/disables the instructions that scrikk between the initial animation and the games selection menu. -- ///{"options":["true","false"]}
+bool motorStartRoutine = true;                         // Enables/disables each of the motors going back and forth at boot. Useful for debugging, but can be turned off to save a little energy for deals. -- ///{"options":["true","false"]}
+uint8_t riggedColor = 1;                               // Can be used to changed the color tag that marked cards are dealt towards. RED = 1; YELLOW = 2; BLUE = 3; GREEN = 4. -- ///{"range":[1,4]}
+uint16_t textSpeedInterval = 160;                      // How fast do you read?? Amount of time (in ms) between frames of scrolling text (Lower number = faster text scrolling). -- ///{"min":20,"max":999}
+uint16_t textStartHoldTime = 800;                      // Amount of time (in ms) scrolling text should pause before advancing. -- ///{"min":0,"max":9999}
+uint16_t textEndHoldTime = 800;                        // Amount of time (in ms) that scrolling text should pause at the end of a scroll. -- ///{"min":0,"max":9999}
+const unsigned long timeUntilScreensaverStart = 55000; // When this amount of time expires (in milliseconds), the intro animation starts as a screensaver. -- ///{"min":10000,"max":99999}
+const unsigned long markedLEDTimeout = 600;            // The Nano's onboard LED lights up when DEALR detects a marked card. This is the number of milliseconds it lights for. -- ///{"min":0,"max":9999}
 const unsigned long expressionDuration = 500;          // DEALR makes faces when it deals cards. This value determines the amount of time it makes the face for.
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -45,14 +45,14 @@ face must be exactly four characters long, including spaces.
 */
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const char *EFFORT = "X  X";     // The face DEALR makes in unrigged games while dealing a card
-const char *MONEY = "$  $";      // The face DEALR makes in rigged games while dealing a marked card
-const char *LOOK_SMALL = "o  o"; // The face DEALR makes in unrigged games while dealing an unmarked card
-const char *LEFT = ">  >";       // The face DEALR makes when rotating clockwise
-const char *RIGHT = "<  <";      // The face DEALR makes when rotating counter-clockwise
-const char *LOOK_BIG = "O  O";   // The face DEALR makes right before dealing a card in a regular game
-const char *WILD = "@  @";       // The face DEALR makes right before dealing a marked card in a rigged game
-const char *SNEAKY = "=  =";     // The face DEALR makes right before dealing an unmarked card in a rigged game
+const char *EFFORT = "X  X";     // The face DEALR makes in unrigged games while dealing a card -- ///{"length":4}
+const char *MONEY = "$  $";      // The face DEALR makes in rigged games while dealing a marked card -- ///{"length":4}
+const char *LOOK_SMALL = "o  o"; // The face DEALR makes in unrigged games while dealing an unmarked card -- ///{"length":4}
+const char *LEFT = ">  >";       // The face DEALR makes when rotating clockwise -- ///{"length":4}
+const char *RIGHT = "<  <";      // The face DEALR makes when rotating counter-clockwise -- ///{"length":4}
+const char *LOOK_BIG = "O  O";   // The face DEALR makes right before dealing a card in a regular game -- ///{"length":4}
+const char *WILD = "@  @";       // The face DEALR makes right before dealing a marked card in a rigged game -- ///{"length":4}
+const char *SNEAKY = "=  =";     // The face DEALR makes right before dealing an unmarked card in a rigged game -- ///{"length":4}
 
 struct DisplayAnimation // This little block has to come before the animation definitions, which let you change the faces DEALR makes.
 {
@@ -81,59 +81,59 @@ You can create new animations and call them in the script, but if you're just ge
 
 // Initial blinking animation
 const char *introFrames[] = {
-  "O  O",  // Frame 1
-  "-  -",  // Frame 2
-  "O  O",  // Frame 3
-  "-  -",  // Frame 4
-  "O  O"}; // Frame 5
+  "O  O",  // Frame 1 -- ///{"length":4}
+  "-  -",  // Frame 2 -- ///{"length":4}
+  "O  O",  // Frame 3 -- ///{"length":4}
+  "-  -",  // Frame 4 -- ///{"length":4}
+  "O  O"}; // Frame 5 -- ///{"length":4}
 const unsigned long introIntervals[] = {
-  1100 ,  // Interval 1
-  75   ,  // Interval 2
-  180  ,  // Interval 3
-  75   ,  // Interval 4
-  1100 }; // Interval 5
+  1100 ,  // Interval 1 -- ///{"min":0,"max":99999}
+  75   ,  // Interval 2 -- ///{"min":0,"max":99999}
+  180  ,  // Interval 3 -- ///{"min":0,"max":99999}
+  75   ,  // Interval 4 -- ///{"min":0,"max":99999}
+  1100 }; // Interval 5 -- ///{"min":0,"max":99999}
 const DisplayAnimation initialBlinking = {introFrames, introIntervals, ARRAY_SIZE(introFrames)};
 
 // Screensaver blinking animation
 const char *screensaveFrames[] = {
-  "O  O",  // Frame 1
-  "-  -",  // Frame 2
-  "O  O",  // Frame 3 
-  "-  -",  // Frame 4
-  "a  a",  // Frame 5
-  "_  _",  // Frame 6
-  "-  -",  // Frame 7
-  "_  _"}; // Frame 8
+  "O  O",  // Frame 1 -- ///{"length":4}
+  "-  -",  // Frame 2 -- ///{"length":4}
+  "O  O",  // Frame 3 -- ///{"length":4}
+  "-  -",  // Frame 4 -- ///{"length":4}
+  "a  a",  // Frame 5 -- ///{"length":4}
+  "_  _",  // Frame 6 -- ///{"length":4}
+  "-  -",  // Frame 7 -- ///{"length":4}
+  "_  _"}; // Frame 8 -- ///{"length":4}
 const unsigned long screensaveIntervals[] = {
-  2000 ,  // Interval 1
-  75   ,  // Interval 2
-  3000 ,  // Interval 3
-  75   ,  // Interval 4
-  3000 ,  // Interval 5
-  3000 ,  // Interval 6
-  1500 ,  // Interval 7
-  4000 }; // Interval 8
+  2000 ,  // Interval 1 -- ///{"min":0,"max":99999}
+  75   ,  // Interval 2 -- ///{"min":0,"max":99999}
+  3000 ,  // Interval 3 -- ///{"min":0,"max":99999}
+  75   ,  // Interval 4 -- ///{"min":0,"max":99999}
+  3000 ,  // Interval 5 -- ///{"min":0,"max":99999}
+  3000 ,  // Interval 6 -- ///{"min":0,"max":99999}
+  1500 ,  // Interval 7 -- ///{"min":0,"max":99999}
+  4000 }; // Interval 8 -- ///{"min":0,"max":99999}
 const DisplayAnimation screensaverBlinking = {screensaveFrames, screensaveIntervals, ARRAY_SIZE(screensaveFrames)};
 
 // Cheating blinking animation
 const char *evilScreensaveFrames[] = {
-  "$  $",   // Frame 1
-  "-  -",   // Frame 2
-  "$  $",   // Frame 3
-  "-  -",   // Frame 4
-  "@  @",   // Frame 5
-  "_  _",   // Frame 6
-  "-  -",   // Frame 7
-  "_  _"};  // Frame 8
+  "$  $",   // Frame 1 -- ///{"length":4}
+  "-  -",   // Frame 2 -- ///{"length":4}
+  "$  $",   // Frame 3 -- ///{"length":4}
+  "-  -",   // Frame 4 -- ///{"length":4}
+  "@  @",   // Frame 5 -- ///{"length":4}
+  "_  _",   // Frame 6 -- ///{"length":4}
+  "-  -",   // Frame 7 -- ///{"length":4}
+  "_  _"};  // Frame 8 -- ///{"length":4}
 const unsigned long evilScreensaveIntervals[] = {
-  2000 ,  // Interval 1
-  75   ,  // Interval 2
-  3000 ,  // Interval 3
-  75   ,  // Interval 4
-  3000 ,  // Interval 5
-  3000 ,  // Interval 6
-  1500 ,  // Interval 7
-  4000 }; // Interval 8
+  2000 ,  // Interval 1 -- ///{"min":0,"max":99999}
+  75   ,  // Interval 2 -- ///{"min":0,"max":99999}
+  3000 ,  // Interval 3 -- ///{"min":0,"max":99999}
+  75   ,  // Interval 4 -- ///{"min":0,"max":99999}
+  3000 ,  // Interval 5 -- ///{"min":0,"max":99999}
+  3000 ,  // Interval 6 -- ///{"min":0,"max":99999}
+  1500 ,  // Interval 7 -- ///{"min":0,"max":99999}
+  4000 }; // Interval 8 -- ///{"min":0,"max":99999}
 const DisplayAnimation evilScreensaverBlinking = {evilScreensaveFrames, evilScreensaveIntervals, ARRAY_SIZE(evilScreensaveFrames)};
 
 #pragma endregion CONFIGURATION
@@ -298,24 +298,24 @@ Fixed values such as motor speeds, timeouts, and default thresholds.
 // GAMES INCLUDED
 const uint8_t numGames = 7;            // Number of *index positions* for pre-programmed games (meaning "number of games" - 1). If you add a game, increment this number.
 const char gamesMenu[][16] PROGMEM = { // "16" defines the max number of characters you can use in these game titles.
-    "1-GO FISH",
-    "2-21",
-    "3-CRAZY EIGHTS",
-    "4-WAR",
-    "5-HEARTS",
-    "6-RUMMY",
-    "7-CUSTOM GAME", // Custom game is also known as "tagless deal," where all tags except red are removed. User inputs number of cards/players to deal in.
-    "*8-TOOLS"};
+    "1-GO FISH", ///{"maxLength":15}
+    "2-21", ///{"maxLength":15}
+    "3-CRAZY EIGHTS", ///{"maxLength":15}
+    "4-WAR", ///{"maxLength":15}
+    "5-HEARTS", ///{"maxLength":15}
+    "6-RUMMY", ///{"maxLength":15}
+    "7-CUSTOM GAME", // Custom game is also known as "tagless deal," where all tags except red are removed. User inputs number of cards/players to deal in. -- ///{"maxLength":15}
+    "*8-TOOLS"}; ///{"maxLength":15}
 
 // TOOL MENUS INCLUDED
 const uint8_t numToolMenus = 5;        // Number of *index positions* for pre-programmed tuning routines (so "number of tool menus" - 1). If you add or subtract one, change this number.
 const char toolsMenu[][26] PROGMEM = { // "26" defines the max number of characters you can use in these menu titles.
-    "*1-DEAL SINGLE CARD",             // Deals a single card (useful for debugging card dealing)
-    "*2-SHUFFLE DECK",                 // Deals cards alternately into two piles, which can be stacked or further shuffled.
-    "*3-SEPARATE MARKED CARDS",        // Looks for cards that are marked and deals them into a different pile from unmarked cards
-    "*4-COLOR TUNER",                  // Place tags under sensor to "reset" color values for each tag
-    "*5-UV SENSOR TUNER",              // Deals 5 cards, and takes the highest reflectance value, adds a buffer, and calls that the "marked card threshold"
-    "*6-RESET DEFAULT COLORS"};        // Resets color and UV values to factory defaults
+    "*1-DEAL SINGLE CARD",             // Deals a single card (useful for debugging card dealing) -- ///{"maxLength":25}
+    "*2-SHUFFLE DECK",                 // Deals cards alternately into two piles, which can be stacked or further shuffled. -- ///{"maxLength":25}
+    "*3-SEPARATE MARKED CARDS",        // Looks for cards that are marked and deals them into a different pile from unmarked cards -- ///{"maxLength":25}
+    "*4-COLOR TUNER",                  // Place tags under sensor to "reset" color values for each tag -- ///{"maxLength":25}
+    "*5-UV SENSOR TUNER",              // Deals 5 cards, and takes the highest reflectance value, adds a buffer, and calls that the "marked card threshold" -- ///{"maxLength":25}
+    "*6-RESET DEFAULT COLORS"};        // Resets color and UV values to factory defaults -- ///{"maxLength":25}
 
 // STARTING STATES AND STATE UPDATE TAGS:
 dealState currentDealState = IDLE;                         // Current state of the dealing interaction, starting with IDLE on boot.
