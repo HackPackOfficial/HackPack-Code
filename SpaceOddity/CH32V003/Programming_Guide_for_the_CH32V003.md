@@ -41,7 +41,15 @@ This is the first time that a Hack Pack has used a second microcontroller as a c
   
 
 ![p2-1](https://ide-media.crunchlabs.com/media/img_002_01_f1c9a3f5ad.png)
+
+
 ![p2-2](https://ide-media.crunchlabs.com/media/img_002_02_40ad3abbee.png)
+
+
 ![p3-1](https://ide-media.crunchlabs.com/media/img_003_01_640b0abd1d.png)
+
+
 ![p4-1](https://ide-media.crunchlabs.com/media/img_004_01_0f07a98dbc.png)
+
+
 ![p4-2](https://ide-media.crunchlabs.com/media/img_004_02_eceed17d8c.png)
