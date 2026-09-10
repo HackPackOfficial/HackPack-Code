@@ -8,7 +8,7 @@
 ************************************************************************************
 */
 
-#define RANDOM_SIZE 5
+#define RANDOM_SIZE 5 ///{"range":[1,6]}
 #define difficultyLevels 3
 #define numParameters 7
 
@@ -43,33 +43,33 @@ private:
         // movement_delay, fakeout_delay, fakeout_prob, yaw_range, pitch_range, pattern_complexity, delay speed
         // Easy
         {
-            50, 
-            300, 
-            30, 
-            1600, 
-            1600, 
+            50, ///{"min":0,"max":100}
+            300, ///{"min":0,"max":500}
+            30, ///{"min":0,"max":80}
+            1600, ///{"min":1000,"max":2200}
+            1600, ///{"min":1000,"max":2200}
             0,
-            10
+            10 ///{"min":0,"max":20}
         },
         // Medium
         {
-            25,
-            250,
-            35,
-            1800,
-            1800,
+            25, ///{"min":0,"max":100}
+            250, ///{"min":0,"max":500}
+            35, ///{"min":0,"max":80}
+            1800, ///{"min":1000,"max":2200}
+            1800, ///{"min":1000,"max":2200}
             1,
-            5
+            5 ///{"min":0,"max":20}
         },
         // Hard  
         {
-            0,
-            200,
-            40,
-            2000,
-            2000,
+            0, ///{"min":0,"max":100}
+            200, ///{"min":0,"max":500}
+            40, ///{"min":0,"max":80}
+            2000, ///{"min":1000,"max":2200}
+            2000, ///{"min":1000,"max":2200}
             2,
-            0
+            0 ///{"min":0,"max":20}
         }
     };
 

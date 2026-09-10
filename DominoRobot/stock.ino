@@ -42,10 +42,10 @@
 #define OFFSET_A          1                                 //Switch to -1 if the motor is running backwards
 #define OFFSET_B          1                                 //Switch to -1 if the motor is running backwards
 #define BUTTON_PIN        12                                //The pin the switch for detecting domino outage is connected to.
-#define LEFT_SENSOR_PIN   A1                                //Left line sensor pin
-#define RIGHT_SENSOR_PIN  A0                                //Right sensor pin
-#define TOP_SPEED         90                                //PWM value for max speed of motors
-#define DISPENSE_DISTANCE 500000                            //Value combinedMotorSpeed needs to reach to drop a domino. Decreasing this puts dominoes closer together.
+#define LEFT_SENSOR_PIN   A1                                //Left line sensor pin -- ///{"options":["A1","A0"]}
+#define RIGHT_SENSOR_PIN  A0                                //Right sensor pin -- ///{"options":["A0","A1"]}
+#define TOP_SPEED         90                                //PWM value for max speed of motors -- ///{"options":["90","100","110","120","130","140","150","160","170","180","190","200","210","220","230","240","250","255"]}
+#define DISPENSE_DISTANCE 500000                            //Value combinedMotorSpeed needs to reach to drop a domino. Decreasing this puts dominoes closer together. -- ///{"range":[400000,1000000],"step":100000}
 
 //set up the servo                          
 Servo servoMotor;                                           //Create an instance of a servo motor object

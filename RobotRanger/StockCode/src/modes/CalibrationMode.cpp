@@ -13,9 +13,9 @@ void CalibrationMode::enter()
     resetPositions();
     calibrationState = CALIBRATION_IDLE;
     setColor(CRGB(
-        225,
-        225,
-        225
+        225, ///{"min":0,"max":255}
+        225, ///{"min":0,"max":255}
+        225 ///{"min":0,"max":255}
     )); // Gray
 }
 
@@ -52,25 +52,25 @@ void CalibrationMode::runStateMachine()
         if (analogValue == 0)
         {
             updateBlinkLED(CRGB(
-                150, 
-                0, 
-                250
+                150, ///{"min":0,"max":255}
+                0, ///{"min":0,"max":255}
+                250 ///{"min":0,"max":255}
             )); // Purple for Reset
         }
         else if (analogValue == 1)
         {
             updateBlinkLED(CRGB(
-                225,
-                225,
-                225
+                225, ///{"min":0,"max":255}
+                225, ///{"min":0,"max":255}
+                225 ///{"min":0,"max":255}
             )); // Grey for Stage 1 (Tilt)
         }
         else if (analogValue == 2)
         {
             updateBlinkLED(CRGB(
-                0,
-                255,
-                255
+                0, ///{"min":0,"max":255}
+                255, ///{"min":0,"max":255}
+                255 ///{"min":0,"max":255}
             )); // Cyan for Stage 2 (Yaw)
         }
         if (robot.currButton == 1)
@@ -82,9 +82,9 @@ void CalibrationMode::runStateMachine()
     break;
     case CALIBRATION_TILT:
         setColor(CRGB(
-            225,
-            225,
-            225
+            225, ///{"min":0,"max":255}
+            225, ///{"min":0,"max":255}
+            225 ///{"min":0,"max":255}
         ));
         robot.calibrating = false;
         if (robot.currButton == 1)
@@ -94,9 +94,9 @@ void CalibrationMode::runStateMachine()
         break;
     case CALIBRATION_YAW:
         setColor(CRGB(
-            0,
-            255,
-            255
+            0, ///{"min":0,"max":255}
+            255, ///{"min":0,"max":255}
+            255 ///{"min":0,"max":255}
         ));
         robot.calibrating = false;
         if (robot.currButton == 1)
@@ -106,9 +106,9 @@ void CalibrationMode::runStateMachine()
         break;
     case CALIBRATION_RESET:
         setColor(CRGB(
-            150,
-            0,
-            250
+            150, ///{"min":0,"max":255}
+            0, ///{"min":0,"max":255}
+            250 ///{"min":0,"max":255}
         ));
         if (robot.currButton == 1)
         {

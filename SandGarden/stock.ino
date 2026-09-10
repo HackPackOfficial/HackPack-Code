@@ -118,8 +118,8 @@ Useful values and limits for defining how the sand garden will behave. In most c
 #define RANDOM_SEED_PIN  A6          //used to generate random numbers.
 #define LED_DATA_PIN     A0          //The output for the LED bar.
 #define NUM_LEDS         8           //Number of LEDs in the bar.
-#define MAX_BRIGHTNESS   40          //Brightness values are 8-bit for a max of 255 (the range is [0-255]), this sets default maximum to 40 out of 255.
-#define LED_FADE_PERIOD  1000        //Amount of time in milliseconds it takes for LEDs to fade on and off.
+#define MAX_BRIGHTNESS   40          //Brightness values are 8-bit for a max of 255 (the range is [0-255]), this sets default maximum to 40 out of 255. -- ///{"min":0,"max":255}
+#define LED_FADE_PERIOD  1000        //Amount of time in milliseconds it takes for LEDs to fade on and off. -- ///{"min":100,"max":10000}
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -204,7 +204,7 @@ int currentPattern = 1;           //default to pattern 1.
 bool runPattern = false;          //this will be the start/stop flag. true means run the selected pattern.
 bool buttonShortPressed = false;  //button pressed state flag.
 bool buttonLongPressed = false;   //for indicating long press
-bool autoMode = true;             //tracking if we're in automatic or manual mode. Defaults to auto on startup. If you want to start in manual drawing mode, set this to false.
+bool autoMode = true;             //tracking if we're in automatic or manual mode. Defaults to auto on startup. If you want to start in manual drawing mode, set this to false. -- ///{"options":["true","false"]}
 bool motorsEnabled = true;        //used to track if motor drivers are enabled/disabled. initializes to enabled so the homing sequence can run.
 bool patternSwitched = false;     //used for properly starting patterns from beginning when a new pattern is selected
 int lastPattern = currentPattern; //used with currentPattern to detect pattern switching and set the patternSwitched flag.
@@ -1370,8 +1370,8 @@ This region of code contains the different pattern generating functions.
 Positions pattern_SimpleSpiral(Positions current, bool restartPattern = false) {                      
   Positions target;                                        //This is where we'll store the value of the next target position.
 
-  const float angleDivisions = 100.0;                      //Going to divide a full revolution into 100ths. "const" because this never changes.
-  const int radialDivisions = 10 * (int)angleDivisions;    //Going to divide the radial axis into 1000ths. Try changing the 10 to a different number, like 20.
+  const float angleDivisions = 100.0;                      //Going to divide a full revolution into 100ths. "const" because this never changes. -- ///{"min":10,"max":1000}
+  const int radialDivisions = 10 * (int)angleDivisions;    //Going to divide the radial axis into 1000ths. Try changing the 10 to a different number, like 20. -- ///{"col":31,"min":2,"max":100}
 
   //Calculate how many degrees we'll move over in the angular axis for the next step.
   const int angleStep = convertDegreesToSteps(360.0 / angleDivisions);  
@@ -1413,8 +1413,8 @@ Positions pattern_SimpleSpiral(Positions current, bool restartPattern = false) {
  */
 Positions pattern_Cardioids(Positions current, bool restartPattern = false) {                      
   Positions target;
-  const int radialStep = ((MAX_R_STEPS) / 8);       //we're going to take huge steps radially (this defaults to 1/8th of the radial axis)
-  static int direction = 1;                         //1 means counterclockwise, -1 means clockwise
+  const int radialStep = ((MAX_R_STEPS) / 8);       //we're going to take huge steps radially (this defaults to 1/8th of the radial axis) -- ///{"col":43,"min":2,"max":100}
+  static int direction = 1;                         //1 means counterclockwise, -1 means clockwise -- ///{"range":[1,-1],"step":-2}
   static bool firstRun = true;
 
   if (firstRun || restartPattern) {                 //if it's the first time we're running the pattern, or if we start it from another pattern
@@ -1465,8 +1465,8 @@ Positions pattern_WavySpiral(Positions current, bool restartPattern = false) {
   int radialDivisions = 10 * (int)angleDivisions;    //Going to divide the radial axis into 1000ths. Try changing the 10 to a different number, like 20.
   
   //Add in values for the amplitude and frequency of the sine wave
-  float amplitude = 200.0;
-  int period = 8;
+  float amplitude = 200.0; ///{"min":50,"max":5000}
+  int period = 8; ///{"range":[1,20]}
 
   //Calculate how many degrees we'll move over in the angular axis for the next step.
   const int angleStep = convertDegreesToSteps(360.0 / angleDivisions);  
@@ -1509,7 +1509,7 @@ Positions pattern_RotatingSquares(Positions current, bool restartPattern = false
   static int segments = 20;                         //Use  20 points to approximate a straight line
   static Positions p1, p2, p3, p4;                  //the four vertices of our square
   static bool firstRun = true;                      //used to track if this is the first time the function is called
-  const int angleShift = convertDegreesToSteps(10); //how much we'll rotate the square
+  const int angleShift = convertDegreesToSteps(10); //how much we'll rotate the square -- ///{"min":0,"max":90}
   if (firstRun || restartPattern) {
     p1.angular = 0;                                 //angular position of first point in absolute coordinates
     p1.radial = 7000;                               //radial position of first point in absolute coordiantes (units are steps)
@@ -1591,9 +1591,9 @@ Positions pattern_PentagonSpiral(Positions current, bool restartPattern = false)
   static int start = 0;                                               //Index to the starting point of the line in the array
   static int end = 1;                                                 //Index to the end point of the line in the array
   static bool firstRun = true;                                        //Flag for tracking if a new polygon needs to be generated
-  const int vertices = 5;                                             //Change this to make a different polygon
+  const int vertices = 5;                                             //Change this to make a different polygon -- ///{"range":[3,12]}
   static Positions vertexList[vertices];                               //construct an array to store the vertices of the polygon
-  static int radialStepover = 500;                                    //Amount to change the radius of the polygon each cycle
+  static int radialStepover = 500;                                    //Amount to change the radius of the polygon each cycle -- ///{"range":[500,1000],"step":100}
 
   if (firstRun || restartPattern) {                                                     //On first function call, construct the polygon vertices
     nGonGenerator(vertexList, vertices, {0,0}, 1000, 0.0);             //generate the vertices of the polygon  
@@ -1648,8 +1648,8 @@ Positions pattern_HexagonVortex(Positions current, bool restartPattern = false) 
   static int segments = 100;
   static Positions p1, p2, p3, p4, p5, p6;            //vertices of the hexagon
   static bool firstRun = true;
-  const int angleShift = convertDegreesToSteps(5);
-  static int radialStepover = 350;                    //how much we'll increase or decrease the size of the hexagon each iteration
+  const int angleShift = convertDegreesToSteps(5); ///{"options":["1","5","10","15","20","25","30","35","40","45"]}
+  static int radialStepover = 350;                    //how much we'll increase or decrease the size of the hexagon each iteration -- ///{"range":[350,700],"step":50}
   static int radius = 1000;                           //starting radius
   
   if (firstRun || restartPattern) {
@@ -1773,10 +1773,10 @@ Positions pattern_PentagonRainbow(Positions current, bool restartPattern = false
   static int start = 0;
   static int end = 1;
   static bool firstRun = true;
-  const int vertices = 5;  
+  const int vertices = 5; ///{"range":[3,12]}
   static Positions pointList[vertices];
   static int radialStepover = 500;
-  const int shiftDeg = 2;
+  const int shiftDeg = 2; ///{"range":[2,8]}
   static int angleShift = convertDegreesToSteps(shiftDeg);
   static int shiftCounter = 1;
 

@@ -12,9 +12,9 @@ void TestMode::enter()
 {
     SERIAL_PRINTLN("TestMode entered");
     setColor(CRGB(
-        20,
-        0,
-        160
+        20, ///{"min":0,"max":255}
+        0, ///{"min":0,"max":255}
+        160 ///{"min":0,"max":255}
     )); // Purple
     resetPositions();
 }

@@ -141,8 +141,8 @@ Useful values and limits for defining how the sand garden will behave. In most c
 #define RANDOM_SEED_PIN  A6          //used to generate random numbers.
 #define LED_DATA_PIN     A0          //The output for the LED bar.
 #define NUM_LEDS         8           //Number of LEDs in the bar.
-#define MAX_BRIGHTNESS   40          //Brightness values are 8-bit for a max of 255 (the range is [0-255]), this sets default maximum to 40 out of 255.
-#define LED_FADE_PERIOD  1000        //Amount of time in milliseconds it takes for LEDs to fade on and off.
+#define MAX_BRIGHTNESS   40          //Brightness values are 8-bit for a max of 255 (the range is [0-255]), this sets default maximum to 40 out of 255. -- ///{"min":0,"max":255}
+#define LED_FADE_PERIOD  1000        //Amount of time in milliseconds it takes for LEDs to fade on and off. -- ///{"min":100,"max":10000}
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1391,10 +1391,10 @@ This region of code contains the different pattern generating functions.
  */
 Positions pattern_AdjustableSteps(Positions current, bool restartPattern = false) {                      
   Positions target;                                        // This is where we'll store the value of the next target position.
-  static int radialDir = 1;
+  static int radialDir = 1; ///{"range":[1,-1],"step":-2}
   static unsigned long lastPrintTime = 0;                 // Used to track the last time we printed the values
   const int angleStepMin = 0, angleStepMax = convertDegreesToSteps(60);
-  const int radialStepMin = 0, radialStepMax = convertMMToSteps(5.0);
+  const int radialStepMin = 0, radialStepMax = convertMMToSteps(5.0); ///{"min":0,"max":20}
 
   int anglePotVal = analogRead(LIVE_INPUT_LEFT_PIN);
   int radiusPotVal = analogRead(LIVE_INPUT_RIGHT_PIN);
@@ -1453,8 +1453,8 @@ Positions pattern_WavySpiral(Positions current, bool restartPattern = false) {
 
   float angleDivisions = 100.0;                      //Going to divide a full revolution into 100ths. "const" because this never changes.
   int radialDivisions = 10 * (int)angleDivisions;    //Going to divide the radial axis into 1000ths. Try changing the 10 to a different number, like 20.
-  constexpr int amplitudeMax = 1000;                 
-  constexpr int frequencyMax = 16;
+  constexpr int amplitudeMax = 1000; ///{"min":0,"max":5000}
+  constexpr int frequencyMax = 16; ///{"min":0,"max":32}
 
 
   //Add in values for the amplitude and frequency of the sine wave
@@ -1516,12 +1516,12 @@ Positions pattern_PolySpiral(Positions current, bool restartPattern = false) {
   static int start = 0;                                               //Index to the starting point of the line in the array
   static int end = 1;                                                 //Index to the end point of the line in the array
   static bool firstRun = true;                                        //Flag for tracking if a new polygon needs to be generated
-  static int vertices = 12;                                             //Change this to make a different polygon
+  static int vertices = 12;                                             //Change this to make a different polygon -- ///{"min":3,"max":20}
   static int lastVertices = vertices;
   constexpr int maxVertices = 12;
   static Positions vertexList[maxVertices];                               //construct an array to store the vertices of the polygon
-  static int radialStepover = 500;                                    //Amount to change the radius of the polygon each cycle
-  constexpr int startRadius = 3500;
+  static int radialStepover = 500;                                    //Amount to change the radius of the polygon each cycle -- ///{"min":0,"max":3000}
+  constexpr int startRadius = 3500; ///{"min":500,"max":6000}
   static int lastRadius = startRadius;
 
   vertices = map(analogRead(LIVE_INPUT_LEFT_PIN), 0, 1023, 3, maxVertices);
@@ -1595,9 +1595,9 @@ Positions pattern_HexagonVortex(Positions current, bool restartPattern = false) 
   static bool firstRun = true;
   static int radius = 1000;                           //starting radius
 
-  const int angleShiftMin = 0, angleShiftMax = convertDegreesToSteps(45);
+  const int angleShiftMin = 0, angleShiftMax = convertDegreesToSteps(45); ///{"min":0,"max":90}
   static int angleShift = convertDegreesToSteps(5);
-  constexpr int radialStepMin = 0, radialStepMax = 2000;
+  constexpr int radialStepMin = 0, radialStepMax = 2000; ///{"min":50,"max":4000}
   static int radialStepover = 350;                    //how much we'll increase or decrease the size of the hexagon each iteration
   static int radialStepDir = 1;
 

@@ -138,8 +138,8 @@ Useful values and limits for defining how the sand garden will behave. In most c
 #define RANDOM_SEED_PIN  A6          //used to generate random numbers.
 #define LED_DATA_PIN     A0          //The output for the LED bar.
 #define NUM_LEDS         8           //Number of LEDs in the bar.
-#define MAX_BRIGHTNESS   40          //Brightness values are 8-bit for a max of 255 (the range is [0-255]), this sets default maximum to 40 out of 255.
-#define LED_FADE_PERIOD  1000        //Amount of time in milliseconds it takes for LEDs to fade on and off.
+#define MAX_BRIGHTNESS   40          //Brightness values are 8-bit for a max of 255 (the range is [0-255]), this sets default maximum to 40 out of 255. -- ///{"min":0,"max":255}
+#define LED_FADE_PERIOD  1000        //Amount of time in milliseconds it takes for LEDs to fade on and off. -- ///{"min":100,"max":10000}
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -421,9 +421,9 @@ elapsedMillis lastJoystickUpdate;                    //used to track the last ti
 //Create an object that handles the joystick button
 OneButtonTiny button(BUTTON_PIN, true, true);        //set up the button (button pin, active low, enable internal pull-up resistor)
 
-constexpr uint8_t globalTimerMinimum = 2;         // minimum allowed duration of the timer in minutes. 
-constexpr uint8_t globalTimerMaximum = 255;       // max allowed duration of the timer in minutes.
-uint8_t globalTimerDuration = 2;                  // timer duration in minutes. Defaults to 2 minutes.
+constexpr uint8_t globalTimerMinimum = 2;         // minimum allowed duration of the timer in minutes. -- ///{"min":0,"max":20}
+constexpr uint8_t globalTimerMaximum = 255;       // max allowed duration of the timer in minutes. -- ///{"min":21,"max":255}
+uint8_t globalTimerDuration = 2;                  // timer duration in minutes. Defaults to 2 minutes. -- ///{"min":0,"max":255}
 uint8_t lastTimerDuration = globalTimerDuration;  // used for detecting timer changes and resetting the pattern
 bool timerDurationChanged = false;                //used for resetting the timer when the duration is changed
 
@@ -1305,10 +1305,10 @@ Positions pattern_SandTimer(Positions current, bool restartPattern = false) {
   float t = 0;                           // the main parameter of the function that ranges from 0.0 to 10.0
   float tr = 0;                          // an offset parameter for calculating radius (lets us shift the sine wave)
   int angle = 0;                         // for calculating the angular coordinate of the target position
-  constexpr int radialOffset = 5000;     // how far out to center the sine pattern
-  constexpr int amplitude = 2000;        // amplitude of sine wave
+  constexpr int radialOffset = 5000;     // how far out to center the sine pattern -- ///{"min":1000,"max":6000}
+  constexpr int amplitude = 2000;        // amplitude of sine wave -- ///{"min":500,"max":5000}
   int radiusToAdd = 0;                   // for calculating the sine wave
-  const bool sineShrinks = true;         // set false to make amplitude grow over time instead of shrink
+  const bool sineShrinks = true;         // set false to make amplitude grow over time instead of shrink -- ///{"options":["true","false"]}
   static bool internalReset = false;     // internal flag for restarting timer
 
   // use a long press of the joystick button to restart the timer.

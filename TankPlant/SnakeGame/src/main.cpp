@@ -86,11 +86,11 @@ Possible additions to make to this hack:
 #include <Arduino.h>        // has to be included before declaring variables
 
 // EXTRA PARAMETERS FOR SNAKE HACK
-constexpr uint8_t SNAKE_STARTING_LEN = 2;   // how big the snake is when the game starts
-constexpr uint8_t MAX_SNAKE_LEN = 144;      // maximum length of the snake that triggers the player win condition
-constexpr uint16_t DEFAULT_MOVE_INTERVAL = 250;       // 250ms delay between snake moves is the standard time. smaller delay increases snake move speed.
-constexpr uint16_t MIN_MOVE_INTERVAL = 50;            // minimum allowed delay between snake moves.
-uint16_t snakeMoveIntSubtractor = 5;                  // subtract 5ms from snakeMoveInterval each time it eats food if hard mode is enabled
+constexpr uint8_t SNAKE_STARTING_LEN = 2;   // how big the snake is when the game starts -- ///{"min":2,"max":20}
+constexpr uint8_t MAX_SNAKE_LEN = 144;      // maximum length of the snake that triggers the player win condition -- ///{"min":3,"max":144}
+constexpr uint16_t DEFAULT_MOVE_INTERVAL = 250;       // 250ms delay between snake moves is the standard time. smaller delay increases snake move speed. -- ///{"min":1,"max":1000}
+constexpr uint16_t MIN_MOVE_INTERVAL = 50;            // minimum allowed delay between snake moves. -- ///{"min":1,"max":999}
+uint16_t snakeMoveIntSubtractor = 5;                  // subtract 5ms from snakeMoveInterval each time it eats food if hard mode is enabled -- ///{"min":1,"max":999}
 
 
 // Included libraries

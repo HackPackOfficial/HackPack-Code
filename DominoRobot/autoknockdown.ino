@@ -29,7 +29,7 @@
 
 #define KP                0.4                               //P term for PID controller
 #define KD                0.8                               //D term for PID controller
-#define TOP_SPEED         90                                //PWM value for max speed of motors
+#define TOP_SPEED         90                                //PWM value for max speed of motors -- ///{"options":["90","100","110","120","130","140","150","160","170","180","190","200","210","220","230","240","250","255"]}
 #define SERVO_RIGHT       20                                //PWM value to make the servo move right
 #define SERVO_LEFT        180                               //PWM value to make the servo move left.
 #define SERVO_PIN         13                                //PWM pin for domino dispensing servo
@@ -42,12 +42,12 @@
 #define STBY              8                                 //motor driver
 #define OFFSET_A          1                                 //Switch to -1 if the motor is running backwards
 #define OFFSET_B          1                                 //Switch to -1 if the motor is running backwards
-#define LEFT_SENSOR_PIN   A1                                //Left line sensor pin
-#define RIGHT_SENSOR_PIN  A0                                //Right sensor pin
-#define DISPENSE_DISTANCE 500000                            //Value combinedMotorSpeed needs to reach to drop a domino. Decreasing this puts dominoes closer together.
+#define LEFT_SENSOR_PIN   A1                                //Left line sensor pin -- ///{"options":["A1","A0"]}
+#define RIGHT_SENSOR_PIN  A0                                //Right sensor pin -- ///{"options":["A0","A1"]}
+#define DISPENSE_DISTANCE 500000                            //Value combinedMotorSpeed needs to reach to drop a domino. Decreasing this puts dominoes closer together. -- ///{"range":[400000,1000000],"step":100000}
 #define BUTTON_PIN        12                                //The pin the switch for detecting domino outage is connected to.
 
-int turnTime = 1750;
+int turnTime = 1750; ///{"range":[1000,2500],"step":250}
 
 //set up the servo                          
 Servo servoMotor;                                           //Create an instance of a servo motor object

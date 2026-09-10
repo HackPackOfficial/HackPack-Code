@@ -5,27 +5,27 @@
 
 // Easy way to toggle Serial print statements. See Debug.h.
 // Set to 1 to enable serial print debugging.
-#define USE_SERIAL 0          // options: 0 or 1 (0 default)
+#define USE_SERIAL 0          // options: 0 or 1 (0 default) -- ///{"range":[0,1]}
 #include <Debug.h>
 
 // Set to 1 to push the PWM frequency on pins 3 and 11 (timer 2) above the
 // audible range, removing the whine that would otherwise come from LED dimming.
-#define USE_LED_PWM 1         // options: 1 or 0 (1 default)
+#define USE_LED_PWM 1         // options: 1 or 0 (1 default) -- ///{"range":[1,0],"step":-1}
 
 // Set to 1 to push the PWM frequency on pins 5 and 6 (timer 0) above the
 // audible range, removing motor noise from the audio output.
-#define USE_FAST_PWM 1        // options: 1 or 0 (1 default)
+#define USE_FAST_PWM 1        // options: 1 or 0 (1 default) -- ///{"range":[1,0],"step":-1}
 
 // Stagger interval for I2C sensor updates. Three sensors share the bus, each
 // getting a read every 3 * I2C_UPDATE_INTERVAL ms.
-constexpr uint8_t I2C_UPDATE_INTERVAL = 15; // milliseconds
+constexpr uint8_t I2C_UPDATE_INTERVAL = 15; // milliseconds -- ///{"min":1,"max":255}
 
 // **********************************************************************************
 // Mozzi Configuration
 // **********************************************************************************
 
 // Control rate in Hz for updateControl(). Must be a power of 2.
-#define MOZZI_CONTROL_RATE 128    // options: 8, 16, 32, 64, 128, 256, 512 (default 128)
+#define MOZZI_CONTROL_RATE 128    // options: 8, 16, 32, 64, 128, 256, 512 (default 128) -- ///{"options":["8","16","32","64","128","256","512"]}
 
 // All three oscillators use cosine waves. FM synthesis is based on phase
 // modulation of a carrier by a modulator; cosine is the conventional choice
@@ -58,9 +58,9 @@ constexpr uint8_t NUM_SCALES = 3;
 ScaleStorage scaleContainer =
 {
   {
-    &scale_EbPentatonicMinor,   // options: any scale defined in MusicalScales.h
-    &scale_CLydian,             // options: any scale defined in MusicalScales.h
-    &scale_CPentatonicMajor     // options: any scale defined in MusicalScales.h
+    &scale_EbPentatonicMinor,   // options: any scale defined in MusicalScales.h -- ///{"options":["&scale_EbPentatonicMinor","&scale_CPentatonicMajor","&scale_CHarmonicMajor","&scale_CLydian","&scale_CDorian","&scale_CWholeTone","&scale_CDiminishedHalfWhole","&scale_CBlues","&scale_CMelodicMinor","&scale_CHirajoshi","&scale_CHungarianMinor","&scale_CPhrygianDominant","&scale_FMajPentatonic","&scale_BbMajPentatonic","&scale_AMinPentatonic","&scale_DHirajoshi","&scale_GEgyptian","&scale_EKumoi","&scale_DIwato"]}
+    &scale_CLydian,             // options: any scale defined in MusicalScales.h -- ///{"options":["&scale_CLydian","&scale_CPentatonicMajor","&scale_CHarmonicMajor","&scale_EbPentatonicMinor","&scale_CDorian","&scale_CWholeTone","&scale_CDiminishedHalfWhole","&scale_CBlues","&scale_CMelodicMinor","&scale_CHirajoshi","&scale_CHungarianMinor","&scale_CPhrygianDominant","&scale_FMajPentatonic","&scale_BbMajPentatonic","&scale_AMinPentatonic","&scale_DHirajoshi","&scale_GEgyptian","&scale_EKumoi","&scale_DIwato"]}
+    &scale_CPentatonicMajor     // options: any scale defined in MusicalScales.h -- ///{"options":["&scale_CPentatonicMajor","&scale_EbPentatonicMinor","&scale_CHarmonicMajor","&scale_CLydian","&scale_CDorian","&scale_CWholeTone","&scale_CDiminishedHalfWhole","&scale_CBlues","&scale_CMelodicMinor","&scale_CHirajoshi","&scale_CHungarianMinor","&scale_CPhrygianDominant","&scale_FMajPentatonic","&scale_BbMajPentatonic","&scale_AMinPentatonic","&scale_DHirajoshi","&scale_GEgyptian","&scale_EKumoi","&scale_DIwato"]}
   },
   0  // index of the initially selected scale
 };
@@ -91,9 +91,9 @@ ScaleStorage scaleContainer =
 //           Slow white → leisurely timbral breathing (~0.05 Hz).
 //           Fast white → rapid shimmer approaching vibrato character (~3.9 Hz).
 
-#define FM_CARRIER_CHANNEL    mappedGreen     // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedGreen)
-#define FM_RATIO_CHANNEL      mappedBlue      // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedBlue)
-#define FM_INDEX_CHANNEL      mappedRed       // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedRed)
-#define FM_LFO_CHANNEL        mappedWhite     // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedWhite)
+#define FM_CARRIER_CHANNEL    mappedGreen     // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedGreen) -- ///{"options":["mappedGreen","mappedBlue","mappedRed","mappedWhite"]}
+#define FM_RATIO_CHANNEL      mappedBlue      // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedBlue) -- ///{"options":["mappedBlue","mappedGreen","mappedRed","mappedWhite"]}
+#define FM_INDEX_CHANNEL      mappedRed       // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedRed) -- ///{"options":["mappedRed","mappedGreen","mappedBlue","mappedWhite"]}
+#define FM_LFO_CHANNEL        mappedWhite     // options: mappedWhite, mappedRed, mappedGreen, mappedBlue (default mappedWhite) -- ///{"options":["mappedWhite","mappedGreen","mappedBlue","mappedRed"]}
 
 #endif // CONFIGURATION_H

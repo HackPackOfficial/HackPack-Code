@@ -164,7 +164,7 @@ public:
   // HACK TRACKING VARIABLES
   bool selectController = false; 
   static const uint8_t numControllers = 4;
-  CRGB controllerColors[numControllers] = {CRGB(0, 0, 255), CRGB(250, 175, 0), CRGB(0, 255, 0), CRGB(255, 0, 0)};
+  CRGB controllerColors[numControllers] = {CRGB(0, 0, 255), CRGB(250, 175, 0), CRGB(0, 255, 0), CRGB(255, 0, 0)}; ///{"col":49,"min":0,"max":255} ///{"col":52,"min":0,"max":255} ///{"col":55,"min":0,"max":255} ///{"col":66,"min":0,"max":255} ///{"col":71,"min":0,"max":255} ///{"col":76,"min":0,"max":255} ///{"col":85,"min":0,"max":255} ///{"col":88,"min":0,"max":255} ///{"col":93,"min":0,"max":255} ///{"col":102,"min":0,"max":255} ///{"col":107,"min":0,"max":255} ///{"col":110,"min":0,"max":255}
   int8_t controllerIndex = 0;
 
 

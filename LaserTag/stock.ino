@@ -59,14 +59,14 @@ Servo myservo;
 // >>>>>>>>>>>>>>>>>>>>>>>>>>> GAME PARAMETERS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 #define DEBOUNCE_DELAY 20
 
-#define SERVO_INITIAL_POS 150     // how agressively to undarken goggles 
-#define SERVO_READY_POS 120       // reduce aggresiveness near end of action
-#define SERVO_HIT_POS 50
+#define SERVO_INITIAL_POS 150     // how agressively to undarken goggles -- ///{"min":90,"max":180}
+#define SERVO_READY_POS 120       // reduce aggresiveness near end of action -- ///{"min":90,"max":180}
+#define SERVO_HIT_POS 50 ///{"min":0,"max":90}
 
-#define TRIGGER_COOLDOWN 500      // milliseconds  
-#define HIT_TIMEOUT 10000         // milliseconds      
+#define TRIGGER_COOLDOWN 500      // milliseconds -- ///{"min":0,"max":5000}
+#define HIT_TIMEOUT 10000         // milliseconds -- ///{"min":1000,"max":30000}
 
-int team = 1;     // default 
+int team = 1;     // default -- ///{"range":[1,3]}
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>> GAME VARIABLES <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
